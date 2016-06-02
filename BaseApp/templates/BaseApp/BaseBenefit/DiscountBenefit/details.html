@@ -1,0 +1,112 @@
+{% extends "BaseApp/base.html" %}
+{% block content %}
+<section class="content-header">
+    <div class="box box-default">
+        <div class="box-header with-border">
+            <h3 class="box-title">{{object.discount_benefit.benefit.title}}</h3>
+        </div>
+        <div class="box-body">
+            <ul class="list-group list-group-unbordered">
+                <li class="list-group-item">
+                    <b>Business</b>
+                    <a class="pull-right" href="{% url 'business details' object.discount_benefit.benefit.business.id %}">
+                        <img src="{{ object.discount_benefit.benefit.business.image.url }}" class="img-rounded list-image" alt="Image">
+                        {{ object.discount_benefit.benefit.business }}
+                    </a>
+                </li>
+                <li class="list-group-item">
+                    <b>User</b>
+                    <a class="pull-right" href="{% url 'user details' object.user.id %}">
+                        <img src="{{ object.user.image.url }}" class="img-rounded list-image" alt="Image">
+                        {{ object.user }}
+                    </a>
+
+                </li>
+                <li class="list-group-item">
+                    <p><b>Description</b>
+                        <span class="pull-right">{{ object.discount_benefit.benefit.text }}</span></p>
+                </li>
+                <li class="list-group-item">
+                    <p><b>Starting date</b>
+                        <span class="pull-right">{{ object.discount_benefit.benefit.starting_date|date:"d/m/Y" }}</span></p>
+                    <p><b>Ending date</b>
+                        <span class="pull-right">{{ object.discount_benefit.benefit.ending_date|date:"d/m/Y" }}</span></p>
+                </li>
+                <li class="list-group-item">
+                    <p><b>Discount percentage</b>
+                        <span class="pull-right text-green">{{ object.discount_benefit.discount_percentage | floatformat }}%</span></p>
+
+                </li>
+                {% if object.discount_benefit.discount_type = 'item_discounts' %}
+                <li class="list-group-item">
+                    <span class="push-left">
+                        <label>Items in discount:</label>
+                        {% for itemdiscount in object.discount_benefit.item_discounts.all %}
+                        <span class="info-box box-overflow container-full">
+                            <span class="info-box-image"><img src="{{itemdiscount.item.image.url}}"></span>
+                            <span class="info-box-content container-full">
+                                <span class="info-box-more pull-right pull-top text-red"><del>{{ itemdiscount.item.price| stringformat:'d' }}</del><i class="fa fa-sheqel"></i></span>
+                                <span class="info-box-more pull-right pull-top text-green">{{ itemdiscount.new_price| stringformat:'d' }}<i class="fa fa-sheqel"></i></span>
+                                <span class="info-box-text"><b>Name:</b> {{ itemdiscount.item.name }}</span>
+                                <span class="info-box-more"><b>Description:</b> {{ itemdiscount.item.description }}</span>
+                                {% if itemdiscount.item.is_available = 'AVAILABLE' %}
+                                <span class="info-box-more text-green">Available</span>
+                                {% else %}
+                                <span class="info-box-more text-red">Not Available</span>
+                                {% endif %}
+                            </span>
+                            </span>
+                        {%endfor%}
+                    </span>
+                </li>
+                {% elif object.discount_benefit.discount_type = 'service_discounts' %}
+                <li class="list-group-item">
+                <span class="push-left">
+                    <label>Services in discount:</label>
+                    {% for service_discount in object.discount_benefit.service_discounts.all %}
+                        <span class="info-box box-overflow container-full">
+                            <span class="info-box-image"><img src="{{service_discount.service.image.url}}"></span>
+                            <span class="info-box-content ">
+                                <span class="info-box-more pull-right pull-top">
+                                    <span class="info-box-more pull-right pull-top text-red"><del>{{ service_discount.service.price| stringformat:'d' }}</del><i class="fa fa-sheqel"></i></span>
+                                    <span class="info-box-more pull-right pull-top text-green">{{ service_discount.service.servicediscount.new_price| stringformat:'d' }}<i class="fa fa-sheqel"></i></span>
+                                </span>
+                                <span class="info-box-text"><b>Name:</b> {{ service_discount.service.name }}</span>
+                                <span class="info-box-more"><b>Description:</b> {{ service_discount.service.description }}</span>
+                                <span class="info-box-more"><b>Duration:</b> {{ service_discount.service.duration }}</span>
+                                <span class="info-box-more small pull-right"><b>Changed at:</b> {{ service_discount.service.changed_at|date:"d.m.Y, H:i" }}</span>
+                            </span>
+                        </span>
+                    {% endfor %}
+                </span>
+                </li>
+                {% else %}
+                <li class="list-group-item">
+                <span class="push-left">
+                    <label>Order price</label>
+                    <span class="container-full">
+                        <span class="info-box-more pull-right pull-top text-red"><del>{{ object.discount_benefit.purchase_amount_discount|stringformat:'d' }}</del><i class="fa fa-sheqel"></i></span>
+                        <span class="info-box-more pull-right pull-top text-green">{{ object.discount_benefit.get_discount | stringformat:'d' }}<i class="fa fa-sheqel"></i></span>
+                    </span>
+                </span>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <div class="box-footer text-center">
+
+
+            {% if request.session.business %}
+            <a href="{% url 'my business discount benefit list' %}" class="btn btn-primary btn-block btn-warning pull-left">
+                <b>Back to the list</b>
+            </a>
+            {% else %}
+            <a href="{% url 'my user discount benefit list' %}" class="btn btn-primary btn-block btn-warning pull-left">
+                <b>Back to the list</b>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

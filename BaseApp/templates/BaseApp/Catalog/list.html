@@ -1,0 +1,31 @@
+{% extends "BaseApp/base.html" %}
+{% block content %}
+<section class="content-header">
+    {% if business_id = request.session.business.id %}
+    <a href="{% url 'catalog create' business_id %}" class="btn btn-sm btn-success btn-circle pull-right">
+        <i class="fa fa-plus"></i>
+    </a>
+    {% endif %}
+    <h1 class="page-header"> Catalogs List</h1>
+</section>
+<section class="content">
+    {% for o in objects_list %}
+    <a href="{% url 'catalog details' business_id o.id %}">
+
+        <div class="info-box box-overflow">
+            <span class="info-box-image"><img src="{{o.image.url}}"></span>
+            <div class="info-box-content">
+                <span class="info-box-text"><b>Name:</b> {{ o.name }}</span>
+                <span class="info-box-more"><b>Description:</b> {{ o.description }}</span>
+                <span class="info-box-more"><b>Number of items:</b> {{ o.catalog_items.count }}</span>
+                <span class="info-box-more"><b>Number of services:</b> {{ o.catalog_services.count }}</span>
+
+            </div>
+            <span class="info-box-more small pull-bottom pull-right"><b>Changed at:</b> {{ o.changed_at|date:"d.m.Y, H:i" }}</span>
+
+        </div>
+    </a>
+{% endfor %}
+
+</section>
+{% endblock %}

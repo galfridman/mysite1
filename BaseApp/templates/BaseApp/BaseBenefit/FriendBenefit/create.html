@@ -1,0 +1,105 @@
+{% extends "BaseApp/base.html" %}
+{% block content %}
+{% load staticfiles %}
+<section class="content">
+    <div class="box box-solid">
+        <div class="box-header with-border ">
+            <h3>Create Friend Benefit</h3>
+
+        </div>
+        <div class="box-body">
+            <div class="input-group has-feedback pull-right clear-both inline">
+                <input id="search-input" type="text" class="form-control" placeholder="Search an item...">
+                <span class="form-control-feedback"><i class="fa fa-search"></i></span>
+            </div>
+
+            <div>&nbsp;</div><div>&nbsp;</div>
+
+            <form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                {% for field in form %}
+                <div class="form-group has-feedback coollapse">
+                    <label>{{field.label}}</label>
+                    {{field}}
+                </div>
+                {% endfor %}
+                <div class="box-items items hideable">
+                    <h4>Items list</h4>
+                    <ul class="products-list product-list-in-box">
+                        {% for item in items %}
+                        <li class="item searchable box-overflow">
+                            <span class="info-box-image"><img src="{{item.image.url}}"></span>
+                            <div class="info-box-content">
+                                <div class="info-box-more pull-right pull-top price">{{ item.price }}<i class="fa fa-sheqel"></i></div>
+                                <span class="info-box-text"><b>Name:</b> {{ item.name }}</span>
+                                <span class="info-box-more"><b>Description:</b> {{ item.description }}</span>
+                                <div class="pull-right"><input type="radio" name='item_checks' value="{{ item.id }}"/></div>
+                                <span class="info-box-more text-green">Available</span>
+                                <div>&nbsp;</div>
+                                <span class="info-box-more small pull-bottom pull-right"><b>Changed at:</b> {{ item.changed_at|date:"d.m.Y, H:i" }}</span>
+                            </div>
+                        </li>
+                        {% empty %}
+                        <li><label>No items available for discount</label></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="box-items services hideable">
+                    <h4>Service list</h4>
+                    <ul class="products-list product-list-in-box">
+                        {% for service in services %}
+                        <li class="item searchable box-overflow">
+                            <span class="info-box-image"><img src="{{service.image.url}}"></span>
+                            <div class="info-box-content">
+                                <div class="info-box-more pull-right pull-top">{{ service.price }}<i class="fa fa-sheqel"></i></div>
+                                <span class="info-box-text"><b>Name:</b> {{ service.name }}</span>
+                                <span class="info-box-more"><b>Description:</b> {{ service.description }}</span>
+                                <div class="pull-right"><input type="checkbox" name='service_checks' value="{{ service.id }}"/></div>
+                                <span class="info-box-more"><b>Duration:</b> {{ service.duration }}</span>
+                                <div>&nbsp;</div>
+                                <span class="info-box-more small pull-bottom pull-right"><b>Changed at:</b> {{ service.changed_at|date:"d.m.Y, H:i" }}</span>
+                            </div>
+                        </li>
+                        {% empty %}
+                        <li><label>No services available for discount</label></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="hideable money_reward">
+                    <label>Money reward</label>
+                    <input type="number" name="money_reward" class="form-control">
+                </div>
+                <div>&nbsp;</div>
+                <hr>
+                <button type="submit" name="submit" class="btn btn-primary btn-block btn-flat">Create</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+$(document).ready(function(){
+    $("select").change(function(){
+        $(this).find("option:selected").each(function(){
+            if($(this).attr("value")=="item_reward"){
+                $(".hideable").not(".items").hide();
+                $(".items").show();
+            }
+            else if($(this).attr("value")=="service_reward"){
+                $(".hideable").not(".services").hide();
+                $(".services").show();
+            }
+            else if($(this).attr("value")=="money_reward"){
+                $(".hideable").not(".purchase_amount").hide();
+                $(".money_reward").show();
+            }
+            else{
+                $(".box").hide();
+            }
+        });
+    }).change();
+});
+</script>
+{% endblock %}

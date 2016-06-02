@@ -1,0 +1,5 @@
+Operations to perform:
+  Apply all migrations: django_comments, sites, admin, sessions, contenttypes, conversation, account, auth, socialaccount, BaseApp
+Running migrations:
+  Rendering model states... DONE
+  Applying conversation.0003_auto_20151006_1119...

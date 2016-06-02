@@ -1,0 +1,22 @@
+<h3 class="no-margin">Select one of your friends:   </h3>
+<div>&nbsp;</div>
+<ul class="list-group">
+    {% for o in friends_list %}
+    <li class="list-group-item">
+        {% include 'BaseApp/AppUser/list_item.html' %}
+        <form action="" method="POST">{% csrf_token %}
+            {% if request.session.business %}
+            <button type="submit" name="manager" value="{{o.id}}" class="btn btn-success btn-block">
+                <i class="fa fa-user-plus"></i>
+                Add to managers
+            </button>
+            {% else %}
+            <button type="submit" name="benefit" value="{{o.id}}" class="btn btn-success btn-block">
+                <i class="fa fa-user-plus"></i>
+                Send follow invitation
+            </button>
+            {% endif %}
+        </form>
+    </li>
+    {% endfor %}
+</ul>

@@ -1,0 +1,28 @@
+{% extends "BaseApp/base.html" %}
+{% block content %}
+<section class="content" id="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#businesses" data-toggle="tab">Businesses</a></li>
+                    <li><a href="#users" data-toggle="tab">Users</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="active tab-pane" id="businesses">
+                        {% for o in businesses_list %}
+                        {% include 'BaseApp/Business/list_item.html' %}
+                        {% endfor %}
+                    </div>
+                    <div class="tab-pane" id="users">
+                        {% for o in users_list %}
+                        {% include 'BaseApp/AppUser/list_item.html' %}
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

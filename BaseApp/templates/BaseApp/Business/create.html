@@ -1,0 +1,100 @@
+{% extends "BaseApp/base.html" %}
+{% block content %}
+{% load widget_tweaks %}
+
+<!-- Main content -->
+<section class="content">
+    <div class="box box-solid">
+        <div class="box-header with-border">
+            <h3>Create Business</h3>
+        </div>
+        <div class="box-body">
+            <form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                {% for field in form %}
+                <div class="form-group has-feedback">
+                    <label>{{field.label}}</label>
+                    {{field}}
+                </div>
+                {% endfor %}
+                <div id="locationField">
+                    <label>Address</label>
+                    <input id="autocomplete" class="form-control" name="address_raw" placeholder="Enter your address" onFocus="geolocate()" type="text">
+                </div>
+                <a data-target="#address-details" data-toggle="collapse" >+ View address details</a>
+                <div id="address-details" class="collapse">
+                    {% for field in address_form %}
+                    <div class="form-group has-feedback">
+                        <label>{{field.label}}</label>
+                        {{field}}
+                    </div>
+                    {% endfor %}
+                </div>
+                <div>&nbsp;</div>
+                <button type="submit" class="btn btn-primary btn-block btn-flat">Create</button>
+            </form>
+
+        </div>
+    </div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+      var placeSearch, autocomplete;
+      var componentForm = {
+        street_number: 'short_name',
+        route: 'long_name',
+        locality: 'long_name',
+        administrative_area_level_1: 'short_name',
+        country: 'long_name',
+        postal_code: 'short_name',
+      };
+
+      function initAutocomplete() {
+        autocomplete = new google.maps.places.Autocomplete(
+            /** @type {!HTMLInputElement} */(document.getElementById('autocomplete')),
+            {types: ['geocode']});
+        autocomplete.addListener('place_changed', fillInAddress);
+      }
+
+      function fillInAddress() {
+  // Get the place details from the autocomplete object.
+  var place = autocomplete.getPlace();
+
+  for (var component in componentForm) {
+    document.getElementById(component).value = '';
+    document.getElementById(component).disabled = false;
+  }
+
+  // Get each component of the address from the place details
+  // and fill the corresponding field on the form.
+  for (var i = 0; i < place.address_components.length; i++) {
+    var addressType = place.address_components[i].types[0];
+    if (componentForm[addressType]) {
+      var val = place.address_components[i][componentForm[addressType]];
+      document.getElementById(addressType).value = val;
+    }
+  }
+}
+
+      function geolocate() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var geolocation = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            var circle = new google.maps.Circle({
+              center: geolocation,
+              radius: position.coords.accuracy
+            });
+            autocomplete.setBounds(circle.getBounds());
+          });
+        }
+      }
+    </script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyABPpBlRI9Qri5jm4BD7bRAl-abe4afVB0
+&libraries=places&callback=initAutocomplete&language=en"
+        async defer></script>
+
+{% endblock %}
+

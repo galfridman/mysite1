@@ -1,0 +1,65 @@
+{% load comments %}
+{% load widget_tweaks %}
+
+<div class="row">
+    <div class="col-xs-11">
+        <!-- Box Comment -->
+        <div class="box box-widget margin">
+            <div class='box-header with-border'>
+                <div class='user-block'>
+                    <img class='img-circle' src="{{ p.business.image.url }}" alt='user image'>
+                    <span class='username'><a href="{% url 'business details' p.business.id %}"><p>{{ p.business }}</p></a></span>
+                    <span class='description'>Shared publicly - {{ p.changed_at }}</span>
+                </div><!-- /.user-block -->
+            </div><!-- /.box-header -->
+            <div class='box-body'>
+                <p>{{ p.text }}</p>
+                <button id="share_{{ p.id }}" name="share" class='btn btn-default btn-xs'><i class='fa fa-share'></i> Share</button>
+                <button id="like_{{ p.id }}" name="like" class='btn btn-default btn-xs'><i class='fa fa-thumbs-o-up'></i> Like</button>
+                <span class='pull-right text-muted'>
+                    {{ p.followers.count }} likes   -   {% get_comment_count for p as comment_count %}{{comment_count}} comments
+                </span>
+            </div><!-- /.box-body -->
+            <div class='box-footer box-comments post-overflow'>
+                {% get_comment_count for p as comment_count %}
+                {% get_comment_list for p as comments_list %}
+                {% for c in comments_list %}
+
+                {% include "UserApp/NewsFeed/comment.html" %}
+
+                {% empty %}
+                <p>no comments</p>
+                {% endfor %}
+            </div><!-- /.box-footer -->
+            <div class="box-footer">
+                <!--{% if user.is_authenticated %}-->
+                    {% get_comment_form for p as form %}
+                    <form action="{% comment_form_target %}" method="POST">
+                        <div class="input-group">
+                            {% csrf_token %}
+                            {{ form.comment|add_class:"form-control"|attr:"type:text"|attr:"rows:1"}}
+                            <!--{{ form.honeypot }}-->
+                            {{ form.content_type }}
+                            {{ form.object_pk }}
+                            {{ form.timestamp }}
+                            {{ form.security_hash }}
+                            <input type="hidden" name="next" value="{% url 'my user newsfeed' %}" />
+                            <span class="input-group-btn">
+                                <input type="submit" class="btn btn-info btn-flat" value="Add comment" id="id_submit" />
+                            </span>
+                        </div>
+                    </form>
+                <!--{% else %}-->
+    <!--<p>Please <a href="{% url 'auth_login' %}">log in</a> to leave a comment.</p>-->
+<!--{% endif %}-->
+                <!--<form action="#" method="post">{% csrf_token %}-->
+                    <!--<img class="img-responsive img-circle img-sm" src="{{ user.appuser.image.url }}" alt="alt text">-->
+                    <!--&lt;!&ndash; .img-push is used to add margin to elements next to floating images &ndash;&gt;-->
+                    <!--<div class="img-push">-->
+                        <!--<input id="comment_{{ p.id }}" name="comment" type="text" class="form-control input-sm pull-left" placeholder="Press enter to post comment"/>-->
+                    <!--</div>-->
+                <!--</form>-->
+            </div><!-- /.box-footer -->
+        </div><!-- /.box -->
+    </div><!-- /.col -->
+</div>

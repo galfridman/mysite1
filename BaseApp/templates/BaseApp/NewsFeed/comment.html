@@ -1,0 +1,15 @@
+{% load staticfiles %}
+{% load app_filters %}
+
+<div class='box-comment comment-overflow'>
+    <!-- User image -->
+    <img class='img-circle img-sm' src="{{ c.user.appuser.image.url }}" alt='user image'>
+    <div class='comment-text'>
+        <span class="username">
+          <a href="{% url 'user details' c.user.appuser.id %}">{{ c.user.appuser }}</a>
+        <span class='text-muted pull-right'>{{ c.created_at }}</span>
+        </span><!-- /.username -->
+        {{ c.comment }}
+        <small class="pull-right"><i class="fa fa-clock-o"></i> {{ c.submit_date |timesince|upto:',' }} ago </small>
+    </div><!-- /.comment-text -->
+</div><!-- /.box-comment -->

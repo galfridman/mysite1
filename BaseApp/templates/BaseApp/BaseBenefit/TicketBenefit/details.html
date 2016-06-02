@@ -1,0 +1,93 @@
+{% extends "BaseApp/base.html" %}
+{% block content %}
+<section class="content-header">
+    <div class="box box-default">
+        <div class="box-header with-border">
+            <h3 class="box-title">{{object.ticket_benefit.benefit.title}}</h3>
+        </div>
+        <div class="box-body">
+            <ul class="list-group list-group-unbordered">
+                <li class="list-group-item">
+                    <b>Business</b>
+                    <a class="pull-right" href="{% url 'business details' object.ticket_benefit.benefit.business.id %}">
+                        <img src="{{ object.ticket_benefit.benefit.business.image.url }}" class="img-rounded list-image" alt="Image">
+                        {{ object.ticket_benefit.benefit.business }}
+                    </a>
+                </li>
+                <li class="list-group-item">
+                    <b>User</b>
+                    <a class="pull-right" href="{% url 'user details' object.user.id %}">
+                        <img src="{{ object.user.image.url }}" class="img-rounded list-image" alt="Image">
+                        {{ object.user }}
+                    </a>
+
+                </li>
+                <li class="list-group-item">
+                    <p><b>Description</b>
+                        <span class="pull-right">{{ object.ticket_benefit.benefit.text }}</span></p>
+                </li>
+                <li class="list-group-item">
+                    <p><b>Starting date</b>
+                        <span class="pull-right">{{ object.ticket_benefit.benefit.starting_date|date:"d/m/Y" }}</span></p>
+                    <p><b>Ending date</b>
+                        <span class="pull-right">{{ object.ticket_benefit.benefit.ending_date|date:"d/m/Y" }}</span></p>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-full">
+                        <div><b>Progress</b>
+                            <span class="badge bg-red pull-right">
+                                {{ object.purchases_made }} / {{ object.ticket_benefit.required_punches }}
+                            </span>
+                        </div>
+                        <div>&nbsp;</div>
+                        <div class="progress progress-xs">
+                            <div class="progress-bar progress-bar-danger" style="width:{{object.get_percents}}%">
+                            </div>
+
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <span class="info-box box-overflow container-full">
+                    {% if object.ticket_benefit.reward_type = 'item_reward' %}
+                    <b>Item reward</b>
+                        <span class="pull-right container-full">
+                            <span class="inf    o-box box-overflow"></span>
+                            <span class="info-box-image"><img src="{{object.ticket_benefit.item_reward.image.url}}"></span>
+                            <span class="info-box-content ">
+                                <span class="info-box-more pull-right pull-top">{{ object.ticket_benefit.item_reward.price }}<i class="fa fa-sheqel"></i></span>
+                                <span class="info-box-text"><b>Name:</b> {{ object.ticket_benefit.item_reward.name }}</span>
+                                <span class="info-box-more"><b>Description:</b> {{ object.ticket_benefit.item_reward.description }}</span>
+                                {% if object.ticket_benefit.item_reward.is_available = 'AVAILABLE' %}
+                                <span class="info-box-more text-green">Available</span>
+                                {% else %}
+                                <span class="info-box-more text-red">Not Available</span>
+                                {% endif %}
+                            </span>
+                        </span>
+                        {% elif object.ticket_benefit.reward_type = 'service_reward' %}
+                            <b>Service reward</b>
+                            <span class="pull-right">{{ object.ticket_benefit.service_reward.name }}</span>
+                        {% else %}
+                        <b>Money reward</b>
+                            <span class="pull-right text-green">{{ object.ticket_benefit.money_reward|floatformat }} <i class="fa fa-sheqel"></i> </span>
+                        {% endif %}
+                    </span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="box-footer text-center">
+            {% if request.session.business %}
+            <a href="{% url 'my business ticket benefit list' %}" class="btn btn-primary btn-block btn-warning pull-left">
+                <b>Back to the list</b>
+            </a>
+            {% else %}
+            <a href="{% url 'my user ticket benefit list' %}" class="btn btn-primary btn-block btn-warning pull-left">
+                <b>Back to the list</b>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

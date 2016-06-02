@@ -1,0 +1,70 @@
+{% extends "BaseApp/base.html" %}
+{% block content %}
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#item" data-toggle="tab">Item coupons</a></li>
+                    <li><a href="#money" data-toggle="tab">Money coupons</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="active tab-pane" id="item">
+                        <ul class="list-group">
+                            <li class="header list-group-item">You have {{ unused_item_coupons_count }} unused item coupons</li>
+                            {% for object in item_coupon_list %}
+                            <li class="list-group-item" style="overflow:auto;">
+                                {% if request.session.business %}
+                                <span>
+                                <a href="{{object.user.get_absolute_url}}">{{ object.user }}</a> got free
+                                <a href="{{object.item.get_absolute_url}}" class="text-green">{{ object.item }}</a> coupon.
+                                </span>
+                                {% else %}
+                                <span>
+                                    You got item coupon for <a href="{{object.item.get_absolute_url}}" class="text-green">{{ object.item }}</a> at
+                                    <a href="{{ object.business.get_absolute_url }}"> {{ object.business }}.</a>
+                                </span>
+                                {% endif %}
+                                {% if not object.is_used %}
+                                <span class="pull-right label label-success">Not used</span>
+                                {% else %}
+                                <span class="pull-right label label-danger">Used</span>
+                                {% endif %}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="tab-pane" id="money">
+                        <ul class="list-group">
+                            <li class="header list-group-item">You have {{ unused_money_coupons_count }} unused money coupons</li>
+                            {% for object in money_coupon_list %}
+                            <li class="list-group-item" style="overflow:auto;">
+                                {% if request.session.business %}
+                                <span>
+                                    <a href="object.user.get_absolute_url">{{ object.user }}</a> got
+                                    <span class="text-green">{{ object.money_reward }} <i class="fa fa-sheqel"></i></span> coupon.
+                                </span>
+                                {% else %}
+                                <span>
+                                    You got <span class="text-green"> {{ object.money_reward }}<i class="fa fa-sheqel"></i></span> coupon for
+                                    <a href="{{ object.business.get_absolute_url }}"> {{ object.business }}.</a>
+                                </span>
+                                on his next order
+                                {% endif %}
+                                {% if not object.is_used %}
+                                <span class="pull-right label label-success">Not used</span>
+                                {% else %}
+                                <span class="pull-right label label-danger">Used</span>
+                                {% endif %}
+                            </li>
+
+                            {% endfor %}
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

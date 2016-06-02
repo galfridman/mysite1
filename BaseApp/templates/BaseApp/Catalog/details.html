@@ -1,0 +1,64 @@
+{% extends "conversation/conversation_base.html" %}
+{% load i18n conversation_tags %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+{% load app_filters %}
+{% block head_title %}
+{% endblock %}
+
+{% block content %}
+
+<section class="content">
+    <div class="box box-default">
+        <div class="box-header with-border">
+            <h3 class="box-title">Catalog details</h3>
+
+            <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+            </div>
+            <!-- /.box-tools -->
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body" style="display: block;">
+            <img class="profile-user-img img-responsive img-circle" src="{{ object.image.url }}" alt="User profile picture">
+            <ul class="list-group list-group-unbordered">
+
+                <li class="list-group-item">
+                    <b>Name</b>
+                    <span class="pull-right">{{ object.name }}</span>
+                </li>
+                <li class="list-group-item">
+                    <b>Description</b>
+                    <span class="pull-right">{{ object.description }}</span>
+                </li>
+                <li class="list-group-item">
+                    <b>Created at</b>
+                    <span class="pull-right">{{ object.created_at }}</span>
+                </li>
+                <li class="list-group-item">
+                    <b>Last modified</b>
+                    <span class="pull-right">{{ object.changed_at }}</span>
+                </li>
+
+            </ul>
+        </div>
+        <!-- /.box-body -->
+        <div class="box-footer text-center">
+            <a href="{% url 'item list' business_id catalog_id %}" class="btn btn-primary btn-block btn-info pull-right">
+                <b>Show catalog's items!</b>
+            </a>
+            <a href="{% url 'service list' business_id catalog_id %}" class="btn btn-primary btn-block btn-info pull-right">
+                <b>Show catalog's services!</b>
+            </a>
+            <!--<a href=" url 'my user dispute delete' o.id " class="btn btn-warning btn-flat pull-left">Edit</a>-->
+            {% if request.session.business.id = business_id %}
+            <a href="{% url 'catalog update' business_id object.id %}" class="btn btn-primary btn-block btn-warning pull-right">
+                <b>Edit Catalog</b>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}

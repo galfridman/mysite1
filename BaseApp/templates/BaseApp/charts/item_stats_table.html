@@ -1,0 +1,46 @@
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title">Items statistics</h3>
+    </div><!-- /.box-header -->
+    <div class="box-body" style="overflow: auto;">
+        <table id="items-table" class="table table-bordered table-hover">
+            <thead>
+            <tr>
+                <th rowspan="2">Name</th>
+                <th rowspan="2">Purchases</th>
+                <th colspan="3">Gender</th>
+                <th colspan="4">Age</th>
+            </tr>
+
+
+
+            <tr>
+                <th>Male</th>
+                <th>Female</th>
+                <th>Unknown</th>
+                <th>18 -</th>
+                <th>18-35</th>
+                <th>35-50</th>
+                <th>50+</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in items_list %}
+            <tr>
+                <td><a href="{{item.get_absolute_url}}">{{item.name}}</a></td>
+                <td>{{item.purchased_times | floatformat}}</td>
+                <td>{{item.statistics.gender.male | floatformat}}</td>
+                <td>{{item.statistics.gender.female | floatformat}}</td>
+                <td>{{item.statistics.gender.none | floatformat}}</td>
+                <td>{{item.statistics.age.age_18 | floatformat}}</td>
+                <td>{{item.statistics.age.age_18_35 | floatformat}}</td>
+                <td>{{item.statistics.age.age_35_50 | floatformat}}</td>
+                <td>{{item.statistics.age.age_50 | floatformat}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div><!-- /.box-body -->
+</div><!-- /.box -->
+
+

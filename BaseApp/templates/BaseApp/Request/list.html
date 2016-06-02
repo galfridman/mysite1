@@ -1,0 +1,105 @@
+{% extends "BaseApp/base.html" %}
+{% block content %}
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#recieved" data-toggle="tab">Recieved requests</a></li>
+                    <li><a href="#sent" data-toggle="tab">Sent requests</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="active tab-pane" id="recieved">
+                        <ul class="list-group">
+                            <li class="header list-group-item">You have {{ recieved_pending_count }} pending requests</li>
+                            {% for object in recieved_requests %}
+                            <li class="list-group-item" style="overflow:auto;">
+                                {% if object.type = 'friend' %}
+                                <span class="pull-left">
+                                    <a href="{{ object.sender.get_absolute_url }}">{{object.sender}}</a> sent you a friend request.
+                                </span>
+                                {% elif object.type = 'follow' %}
+                                <span class="pull-left">
+                                    <a href="{{ object.sender.get_absolute_url }}">{{object.sender}}</a> invites you to follow it.
+                                </span>
+                                {% elif object.type = 'follow-benefit' %}
+                                <span class="pull-left">
+                                    <a href="{{ object.sender.get_absolute_url }}">{{object.sender}}</a> invites you to follow
+                                    <a href="{{object.object.friend_benefit.benefit.business.get_absolute_url}}"> {{object.object.friend_benefit.benefit.business}}</a>.
+                                </span>
+                                {% else %}
+                                <span class="pull-left">
+                                    <a href="{{ object.sender.get_absolute_url }}">{{object.sender}}</a> invites you to be a manager.
+                                </span>
+                                {% endif %}
+                                {% if object.status = 'pending' %}
+                                <form action="" method="POST">{% csrf_token %}
+                                    <span class="pull-right">
+                                        <button name="reject" value="{{object.id}}" class="btn btn-sm btn-danger btn-circle-small">
+                                            <i class="fa fa-times"></i>
+                                        </button>
+                                        <button name="accept" value="{{object.id}}" class="btn btn-sm btn-success btn-circle-small">
+                                            <i class="fa fa-check"></i>
+                                        </button>
+                                    </span>
+                                </form>
+                                {% elif object.status = 'accepted' %}
+                                <span class="pull-right">
+                                        <label class="label label-success">Accepted</label>
+                                </span>
+                                {% else %}
+                                <span class="pull-right">
+                                        <label class="label label-danger">Rejected</label>
+                                </span>
+                                {% endif %}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="tab-pane" id="sent">
+                        <ul class="list-group">
+                            <li class="header list-group-item">You have {{ sent_pending_count }} pending requests</li>
+                            {% for object in sent_requests %}
+                            <li class="list-group-item" style="overflow:auto;">
+                                {% if object.type = 'friend' %}
+                                <span class="pull-left">
+                                    You sent friend request to <a href="{{ object.reciever.get_absolute_url }}">{{object.reciever}}</a>.
+                                </span>
+                                {% elif object.type = 'follow' %}
+                                <span class="pull-left">
+                                    You invited <a href="{{ object.reciever.get_absolute_url }}">{{object.reciever}}</a> to follow you.
+                                </span>
+                                {% elif object.type = 'follow-benefit' %}
+                                <span class="pull-left">
+                                    You invited <a href="{{ object.reciever.get_absolute_url }}">{{object.reciever}}</a> to follow
+                                    <a href="{{object.object.friend_benefit.benefit.business.get_absolute_url}}"> {{object.object.friend_benefit.benefit.business}}</a>.
+                                </span>
+                                {% else %}
+                                <span class="pull-left">
+                                    You invited <a href="{{ object.reciever.get_absolute_url }}">{{object.reciever}}</a> to be a manager in your business.
+                                </span>
+                                {% endif %}
+                                {% if object.status = 'pending' %}
+                                <span class="pull-right">
+                                        <label class="label label-warning">Pending</label>
+                                </span>
+                                {% elif object.status = 'accepted' %}
+                                <span class="pull-right">
+                                        <label class="label label-success">Accepted</label>
+                                </span>
+                                {% else %}
+                                <span class="pull-right">
+                                        <label class="label label-danger">Rejected</label>
+                                </span>
+                                {% endif %}
+                            </li>
+                            {% endfor %}
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

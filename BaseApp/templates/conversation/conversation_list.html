@@ -1,0 +1,41 @@
+{% extends "BaseApp/base.html" %}
+{% load i18n %}
+{% load widget_tweaks %}
+{% load app_filters %}
+{% block content %}
+<section class="content">
+<ul class="list-group">
+    <li class="list-group-item header">You have {{ user.unread_conversations.count }} unread conversations</li>
+    {% for c in user.conversations.all %}
+    {% if c.appconversation.is_regular %}
+    <li class="list-group-item"><!-- start message -->
+        <div class="box-small-overflow">
+        <a href="{% url 'conversation_update' c.id%}">
+            <div class="pull-left">
+                <img src="{{ c.appconversation.appuser.image.url }}" class="list-image-message img-circle" alt="User Image">
+            </div>
+            <small class="pull-right no-margin"><i class="fa fa-clock-o"></i> {{ c.get_last_message.date|timesince|upto:',' }} ago</small>
+            <h4 class="no-margin">
+                {% if c.user.appuser not in c.appconversation.business.managers.all %}
+                {{ c.appconversation.business.name }}
+                {% else %}
+                {{ c.appconversation.appuser }}
+                {% endif %}
+            </h4>
+            <p class="no-margin">
+                {% if c.get_last_message.user.appuser in c.appconversation.business.managers.all %}
+                {{ c.appconversation.business.name }}
+                {% else %}
+                {{ c.appconversation.appuser }}
+                {% endif %}
+                : {{c.get_last_message.text}}
+            </p>
+
+        </a>
+            </div>
+    </li><!-- end message -->
+    {% endif %}
+    {% endfor %}
+</ul>
+    </section>
+{% endblock %}

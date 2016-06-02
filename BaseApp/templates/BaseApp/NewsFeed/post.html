@@ -1,0 +1,60 @@
+{% load comments %}
+{% load widget_tweaks %}
+
+<div class="box box-widget">
+    <div class='box-header with-border'>
+        <div class='user-block'>
+            <img class='img-circle' src="{{ p.business.image.url }}" alt='user image'>
+            <span class='username'><a href="{% url 'business details' p.business.id %}"><p>{{ p.business }}</p></a></span>
+            <span class='description'>Shared to {{p.audience}} - {{ p.changed_at }}</span>
+        </div>
+    </div>
+    <div class='box-body'>
+        <p>{{ p.text }}</p>
+        <form id= {{p.id}} action="" method="GET">
+            {% if user.appuser in p.followers.all %}
+            <button form="{{p.id}}" name="dislike" value="{{ p.id }}" class='btn btn-default btn-flat btn-xs'>
+                <i class='fa fa-thumbs-down'></i> Dislike
+            </button>
+            {% else %}
+            <button form="{{p.id}}" name="like" value="{{ p.id }}" class='btn btn-default btn-flat btn-xs'>
+                <i class='fa fa-thumbs-up'></i> Like
+            </button>
+            {% endif %}
+        </form>
+                <span class='pull-right text-muted'>
+                    {{ p.followers.count }} likes   -   {% get_comment_count for p as comment_count %}{{comment_count}} comments
+                </span>
+    </div>
+    {% get_comment_count for p as comment_count %}
+    {% get_comment_list for p as comments_list %}
+    {% if comments_list %}
+    <div class='box-footer box-comments post-overflow'>
+
+        {% for c in comments_list %}
+
+        {% include "BaseApp/NewsFeed/comment.html" %}
+
+        {% endfor %}
+    </div>
+    {% endif %}
+    <div class="box-footer">
+        {% get_comment_form for p as form %}
+        <form action="{% comment_form_target %}" method="POST">
+            <div class="input-group">
+                {% csrf_token %}
+                {{ form.comment|add_class:"form-control"|attr:"type:text"|attr:"rows:1"}}
+                {{ form.content_type }}
+                {{ form.object_pk }}
+                {{ form.timestamp }}
+                {{ form.security_hash }}
+                <input type="hidden" name="next" value="{% url 'my user newsfeed' %}" />
+                            <span class="input-group-btn">
+                                <input type="submit" class="btn btn-info btn-flat" value="Add comment" id="id_submit" />
+                            </span>
+            </div>
+        </form>
+    </div>
+</div>
+
+

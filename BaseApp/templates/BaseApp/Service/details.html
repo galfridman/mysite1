@@ -1,0 +1,80 @@
+{% extends "conversation/conversation_base.html" %}
+{% load i18n conversation_tags %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+{% load app_filters %}
+{% block head_title %}
+{% endblock %}
+
+{% block content %}
+
+<section class="content">
+    <div class="box box-default">
+        <div class="box-header with-border">
+            <h3 class="box-title">Service details</h3>
+
+            <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+            </div>
+            <!-- /.box-tools -->
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body" style="display: block;">
+            <img class="profile-user-img img-responsive img-circle" src="{{ object.image.url }}" alt="User profile picture">
+            <ul class="list-group list-group-unbordered">
+
+                <li class="list-group-item">
+                    <b>Name</b>
+                    <span class="pull-right">{{ object.name }}</span>
+                </li>
+                <li class="list-group-item">
+                    <b>Description</b>
+                    <span class="pull-right">{{ object.description }}</span>
+                </li>
+                <li class="list-group-item">
+                    <b>Price</b>
+                    {% for benefit in user.appuser.user_discount_benefits.all %}
+                    {% if object.servicediscount %}
+                    {% if object.servicediscount in benefit.discount_benefit.service_discounts.all and benefit.discount_benefit.benefit.is_available %}
+                    <span class="info-box-more pull-right pull-top text-red"><del>{{ object.price| stringformat:'d' }}</del><i class="fa fa-sheqel"></i></span>
+                    <span class="info-box-more pull-right pull-top text-green">{{ object.servicediscount.new_price| stringformat:'d' }}<i class="fa fa-sheqel"></i></span>
+                    {% endif %}
+                    {% else %}
+                    <span class="info-box-more pull-right pull-top">{{ object.price }}<i class="fa fa-sheqel"></i></span>
+                    {% endif %}
+                    {% empty %}
+                    <span class="info-box-more pull-right pull-top">{{ object.price }}<i class="fa fa-sheqel"></i></span>
+                    {% endfor %}
+                </li>
+                <li class="list-group-item">
+                    <b>Created at</b>
+                    <span class="pull-right">{{ object.created_at }}</span>
+                </li>
+                <li class="list-group-item">
+                    <b>Last modified</b>
+                    <span class="pull-right">{{ object.changed_at }}</span>
+                </li>
+                <li class="list-group-item">
+                    <b>Duration:</b>  {{object.duration}}
+                </li>
+                <li class="list-group-item">
+                    <b>Purchased times</b>
+                    <span class="pull-right">{{ object.purchased_times }}</span>
+                </li>
+
+            </ul>
+        </div>
+        <!-- /.box-body -->
+        <div class="box-footer text-center">
+            <!--<a href=" url 'my user dispute delete' o.id " class="btn btn-warning btn-flat pull-left">Edit</a>-->
+            {% if request.session.business.id = business_id %}
+            <a href="{% url 'service update' business_id catalog_id service_id %}" class="btn btn-primary btn-block btn-warning pull-right">
+                <b>Edit Service</b>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}

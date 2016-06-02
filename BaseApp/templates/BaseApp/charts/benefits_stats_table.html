@@ -1,0 +1,52 @@
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title">Benefits statistics</h3>
+    </div><!-- /.box-header -->
+    <div class="box-body">
+        <table id="benefits-table" class="table table-bordered table-hover">
+            <thead>
+            <tr>
+                <th colspan="1">Name</th>
+                <th colspan="1">Type</th>
+                <th colspan="1">Registered users</th>
+                <th colspan="1">Times completed</th>
+                <th colspan="1">Score</th>
+            </tr>
+
+            </thead>
+            <tbody>
+            {% for benefit in ticket_benefits %}
+            <tr>
+                <td><a href="{{benefit.get_absolute_url}}">{{benefit.benefit.title}}</a></td>
+                <td>Ticket</td>
+                <td>{{benefit.ticket_benefits_made.count}}</td>
+                <td>{{benefit.times_completed | floatformat}}</td>
+                <td>{{benefit.get_score | floatformat}}</td>
+
+            </tr>
+            {% endfor %}
+            {% for benefit in friend_benefits %}
+            <tr>
+                <td><a href="{{item.get_absolute_url}}">{{benefit.benefit.title}}</a></td>
+                <td>Friend</td>
+                <td>{{benefit.friend_benefits_made.count}}</td>
+                <td>{{benefit.times_completed | floatformat}}</td>
+                <td>{{benefit.get_score | floatformat}}</td>
+
+            </tr>
+            {% endfor %}
+            {% for benefit in discount_benefits %}
+            <tr>
+                <td><a href="{{benefit.get_absolute_url}}">{{benefit.benefit.title}}</a></td>
+                <td>Discount</td>
+                <td>{{benefit.discount_benefits_made.count}}</td>
+                <td>{{benefit.times_completed | floatformat}}</td>
+                <td>{{benefit.get_score | floatformat}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div><!-- /.box-body -->
+</div><!-- /.box -->
+
+

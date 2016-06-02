@@ -1,0 +1,157 @@
+{% extends "BaseApp/base.html" %}
+{% block content %}
+<section class="content" id="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#about" data-toggle="tab">About</a></li>
+                    <li><a href="#actions" data-toggle="tab">Actions</a></li>
+                    <li><a href="#log" data-toggle="tab">Log</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="active tab-pane" id="about">
+                        <div class="box-body box-profile">
+                            <img class="profile-user-img img-responsive img-circle" src="{{ object.image.url }}" alt="User profile picture">
+                            <h3 class="profile-username text-center">{{ object }}</h3>
+                            <p class="text-muted text-center">Application Business</p>
+
+                            <ul class="list-group list-group-unbordered">
+                                <li class="list-group-item">
+                                    <b>Name</b> <a class="pull-right">{{ object.name }}</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Description</b> <a class="pull-right">{{ object.description }}</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <label><b>Address</b></label><a class="pull-right">{{ object.address.raw }}</a>
+                                    <p><a data-target="#address-details" data-toggle="collapse" >+ View address details</a></p>
+                                    <div id="address-details" class="collapse">
+                                        <p><b>Country:</b><a class="pull-right"> {{object.address.country}}</a></p>
+                                        <p><b>State:</b><a class="pull-right"> {{object.address.state}}</a></p>
+                                        <p><b>City:</b><a class="pull-right"> {{object.address.city}}</a></p>
+                                        <p><b>Street:</b><a class="pull-right"> {{object.address.street_name}} {{object.address.street_number}}</a></p>
+                                        <p><b>Postal:</b><a class="pull-right"> {{object.address.zip_code}}</a></p>
+                                    </div>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Catagory</b> <a class="pull-right">{{ object.category }}</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="container container-full no-padding">
+                                        {% if request.session.business = object %}
+                                        <a class="pull-right" href="{% url 'friends list' %}"  data-target="#my-modal">
+                                            Add new manager
+                                            <div class="no-margin btn btn-circle-small btn-success" style="padding:3px;">
+                                                <i class="fa fa-plus"></i>
+                                            </div>
+                                        </a>
+                                        {% endif %}
+                                        <b>Managers</b>
+                                        {% for m in object.managers.all %}
+                                        <div>&nbsp;</div>
+                                        <div class="pull-right" >
+                                            <a href="{{ m.get_absolute_url }}" >{{ m }} </a>
+                                            {% if request.session.business = object %}
+
+                                            <button class="btn btn-circle-small btn-danger" style="padding:2px; margin:0px;">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Followers</b> <a class="pull-right">{{ object.followers.all.count }}</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Phone numbers</b>
+                                    {% for phone in object.phones.all %}
+                                    <p>{{phone.description}}<a class="pull-right">{{ phone.number }}</a></p>
+
+                                    {% endfor %}
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Facebook page</b> <a href="{{ object.name }}" class="pull-right">Link</a>
+                                </li>
+
+
+                            </ul>
+                            {% if request.session.business.id = business_id %}
+                            <a href="{% url 'business update' object.id %}" class="btn btn-primary btn-block btn-warning pull-right"><b>Edit Profile</b></a>
+                            {% endif %}
+
+                        </div><!-- /.box-body -->
+                    </div><!-- /.tab-pane -->
+                    <div class="tab-pane" id="actions">
+                        <!-- The timeline -->
+                        <form action="{% url 'my user appointment create' %}" method="GET">
+                            <div class="input-group container-full">
+                                <button type="submit" name="business_id" class="btn submit-btn-block btn-social btn-flat btn-info" value="{{object.id}}">
+                                    <i class="fa fa-calendar"></i>
+                                    Make an appointment
+                                </button>
+                            </div>
+                        </form>
+                        <form action="{% url 'my user order create' %}" method="GET">
+                            <div class="input-group container-full">
+
+                                <button type="submit" name="order_business_id" id="create-order" class="btn submit-btn-block btn-social btn-flat btn-info" value="{{object.id}}">
+                                    <i class="fa fa-shopping-cart"></i>
+                                    Make an order
+                                </button>
+                            </div>
+                        </form>
+                        <a href="{% url 'catalog list' object.id %}" class="btn btn-block btn-social btn-flat btn-info">
+                            <i class="fa fa-leanpub "></i>
+                            See business catalogs
+                        </a>
+                        <a href="{% url 'base benefit list' object.id%}" class="btn btn-block btn-social btn-flat btn-info">
+                            <i class="fa fa-gift "></i>
+                            See business benefits
+                        </a>
+
+                        <a href="#" class="btn btn-block btn-social btn-flat btn-info" >
+                            <i class="fa fa-envelope"></i>
+                            Send a message
+                        </a>
+                        <a href="#" class="btn btn-block btn-social btn-flat btn-success">
+                            <i class="fa fa-user-plus"></i>
+                            Invite to follow
+                        </a>
+                        {% if user.appuser not in object.followers.all %}
+                        <form action="#" method="GET">
+                            <div class="input-group container-full">
+                                <button type="submit" name="follow" class="btn submit-btn-block btn-social btn-flat btn-info" value="{{object.id}}">
+                                    <i class="fa fa-plus"></i>
+                                    FOLLOW
+                                </button>
+                            </div>
+                        </form>
+                        {% else %}
+                        <form action="#" method="GET">
+                            <div class="input-group container-full">
+                                <button type="submit" name="unfollow" class="btn submit-btn-block btn-social btn-flat btn-danger" value="{{object.id}}">
+                                    <i class="fa fa-minus"></i>
+                                    UNFOLLOW
+                                </button>
+                            </div>
+                        </form>
+                        {% endif %}
+                        <a href="#" class="btn btn-block btn-social btn-flat btn-danger">
+                            <i class="fa fa-ban"></i>
+                            Remove this user
+                        </a>
+                    </div><!-- /.tab-pane -->
+
+                    <div class="tab-pane" id="log">
+
+                    </div><!-- /.tab-pane -->
+                </div><!-- /.tab-content -->
+            </div><!-- /.nav-tabs-custom -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+
+</section><!-- /.content -->
+{% endblock %}

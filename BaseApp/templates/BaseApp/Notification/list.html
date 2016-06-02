@@ -1,0 +1,10 @@
+{% extends "BaseApp/base.html" %}
+{% load notification_tags %}
+{% block content %}
+<section class="content">
+    <ul class="list-group">
+        <li class="header list-group-item">You have {{ user.notifications.unread.count }} new notifications</li>
+        {% render_notifications using user.notifications.active.prefetch %}
+    </ul>
+</section>
+{% endblock %}

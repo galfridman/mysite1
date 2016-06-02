@@ -1,0 +1,44 @@
+{% load comments %}
+<div class="row">
+    <div class="col-xs-11">
+        <!-- Box Comment -->
+        <div class="box box-widget margin">
+            <div class='box-header with-border'>
+                <div class='user-block'>
+                    <img class='img-circle' src="{{ p.business.image.url }}" alt='user image'>
+                    <span class='username'><a href="#"><p>{{ p.business }}</p></a></span>
+                    <span class='description'>Shared publicly - {{ p.changed_at }}</span>
+                </div><!-- /.user-block -->
+            </div><!-- /.box-header -->
+            <div class='box-body'>
+                <p>{{ p.text }}</p>
+                <button id="share_{{ p.id }}" name="share" class='btn btn-default btn-xs'><i class='fa fa-share'></i> Share</button>
+                <button id="like_{{ p.id }}" name="like" class='btn btn-default btn-xs'><i class='fa fa-thumbs-o-up'></i> Like</button>
+                <span class='pull-right text-muted'>
+                    {{ p.followers.count }} likes   -   {% get_comment_count for p as comment_count %}{{comment_count}} comments
+                </span>
+            </div><!-- /.box-body -->
+            <div class='box-footer box-comments'>
+                <!--<div class="fb-comments" data-href="{{request.build_absolute_uri}}posts/{{pid}}" data-width="100%" data-numposts="5"></div>-->
+                {% get_comment_count for p as comment_count %}
+                {% get_comment_list for p as comments_list %}
+                {% for c in comments_list %}
+
+                {% include "BusinessApp/NewsFeed/comment.html" %}
+
+                {% empty %}
+                <p>no comments</p>
+                {% endfor %}
+            </div><!-- /.box-footer -->
+            <div class="box-footer">
+                <form action="#" method="post">{% csrf_token %}
+                    <img class="img-responsive img-circle img-sm" src="{{ user.appuser.image.url }}" alt="alt text">
+                    <!-- .img-push is used to add margin to elements next to floating images -->
+                    <div class="img-push">
+                        <input id="comment_{{ p.id }}" name="comment" type="text" class="form-control input-sm pull-left" placeholder="Press enter to post comment"/>
+                    </div>
+                </form>
+            </div><!-- /.box-footer -->
+        </div><!-- /.box -->
+    </div><!-- /.col -->
+</div>

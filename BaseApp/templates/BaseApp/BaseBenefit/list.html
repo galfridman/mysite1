@@ -1,0 +1,212 @@
+{% extends "BaseApp/base.html" %}
+{% block content %}
+<section class="content">
+    {% if business_id = request.session.business.id %}
+    <div class="box-body"><a href="{% url 'base benefit create' %}" class="btn btn-sm btn-success btn-circle pull-right">
+        <i class="fa fa-plus"></i>
+    </a></div>
+    {% endif %}
+    <div class="nav-tabs-custom">
+
+        <ul class="nav nav-tabs">
+
+            <li class="active"><a style="padding: 5px;" href="#discount" data-toggle="tab">Discount benefits</a></li>
+            <li><a style="padding: 5px;" href="#friend" data-toggle="tab">Friend benefits</a></li>
+            <li><a style="padding: 5px;" href="#ticket" data-toggle="tab">Ticket benefits</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="active tab-pane" id="discount">
+                {% for object in discount_benefit_list %}
+                <div class="box box-default collapsed-box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">{{object.benefit.title}}</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <ul class="list-group list-group-unbordered">
+                            <li class="list-group-item">
+                                <p><b>Description</b>
+                                    <span class="pull-right">{{ object.benefit.text }}</span></p>
+                            </li>
+                            <li class="list-group-item">
+                                <p><b>Starting date</b>
+                                    <span class="pull-right">{{ object.benefit.starting_date|date:"d/m/Y" }}</span></p>
+                                <p><b>Ending date</b>
+                                    <span class="pull-right">{{ object.benefit.ending_date|date:"d/m/Y" }}</span></p>
+                            </li>
+                            <li class="list-group-item">
+
+                                {% if object.discount_type = 'item_discounts' %}
+                                <table class="table table-striped">
+                                    <tbody>
+                                    <tr>
+                                        <th>Item name</th>
+                                        <th>Old price</th>
+                                        <th>New price</th>
+                                    </tr>
+                                    {% for item_discount in object.item_discounts.all %}
+                                    <tr>
+                                        <td>
+                                            {{ item_discount.item.name }}
+                                        </td>
+                                        <td>
+                                            {{ item_discount.item.price }}
+                                        </td>
+                                        <td>
+                                            {{ item_discount.new_price }}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                {% elif object.discount_type = 'service_discounts' %}
+                                <table class="table table-striped">
+                                    <tbody>
+                                    <tr>
+                                        <th>Service name</th>
+                                        <th>Old price</th>
+                                        <th>New price</th>
+                                    </tr>
+                                    {% for service_discount in object.service_discounts.all %}
+                                    <tr>
+                                        <td>
+                                            {{ service_discount.service.name }}
+                                        </td>
+                                        <td>
+                                            {{ service_discount.service.price }}
+                                        </td>
+                                        <td>
+                                            {{ service_discount.new_price }}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                {% else %}
+                                <p><b>Purchase amount</b>
+                                    <span class="pull-right">{{ object.purchase_amount_discount }}</span></p>
+                                <p><b>Purchase discount</b>
+                                    <span class="pull-right">{{ object.discount_percentage }}%</span></p>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="box-footer text-center">
+                        {% if request.session.business.id = business_id %}
+                        {% else %}
+                        <form action="" method="POST">{% csrf_token %}
+                            <button type="submit" name="discount_benefit" value="{{object.id}}" class="btn btn-flat pull-right btn-success"><i class="fa fa-plus"></i> Add to my benefits</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="tab-pane" id="friend">
+                {% for object in friend_benefit_list %}
+                <div class="box box-default collapsed-box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">{{object.benefit.title}}</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <ul class="list-group list-group-unbordered">
+                            <li class="list-group-item">
+                                <p><b>Description</b>
+                                    <span class="pull-right">{{ object.benefit.text }}</span></p>
+                            </li>
+                            <li class="list-group-item">
+                                <p><b>Starting date</b>
+                                    <span class="pull-right">{{ object.benefit.starting_date|date:"d/m/Y" }}</span></p>
+                                <p><b>Ending date</b>
+                                    <span class="pull-right">{{ object.benefit.ending_date|date:"d/m/Y" }}</span></p>
+                            </li>
+                            <li class="list-group-item">
+                                <p><b>Required friends</b>
+                                    <span class="pull-right">{{ object.required_friends }}</span></p>
+                                <hr>
+                                {% if object.discount_type = 'item_reward' %}
+                                <p><b>Item reward</b>
+                                    <span class="pull-right">{{ object.item_reward.item.name }}</span></p>
+                                {% elif object.discount_type = 'service_reward' %}
+                                <p><b>Service reward</b>
+                                    <span class="pull-right">{{ object.service_reward }}</span></p>
+                                {% else %}
+                                <p><b>Money reward</b>
+                                    <span class="pull-right">{{ object.money_reward }}</span></p>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="box-footer text-center">
+                        {% if request.session.business.id = business_id %}
+                        {% else %}
+                        <form action="" method="POST">{% csrf_token %}
+                            <button type="submit" name="friend_benefit" value="{{object.id}}" class="btn btn-flat pull-right btn-success"><i class="fa fa-plus"></i> Add to my benefits</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="tab-pane" id="ticket">
+                {% for object in ticket_benefit_list %}
+                <div class="box box-default collapsed-box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">{{ object.benefit.title }}</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        <ul class="list-group list-group-unbordered">
+                            <li class="list-group-item">
+                                <p><b>Description</b>
+                                    <span class="pull-right">{{ object.benefit.text }}</span></p>
+                            </li>
+                            <li class="list-group-item">
+                                <p><b>Starting date</b>
+                                    <span class="pull-right">{{ object.benefit.starting_date|date:"d/m/Y" }}</span></p>
+                                <p><b>Ending date</b>
+                                    <span class="pull-right">{{ object.benefit.ending_date|date:"d/m/Y" }}</span></p>
+                            </li>
+                            <li class="list-group-item">
+                                <p><b>Required punches</b>
+                                    <span class="pull-right">{{ object.required_punches }}</span></p>
+                                <hr>
+                                {% if object.discount_type = 'item_reward' %}
+                                <p><b>Item reward</b>
+                                    <span class="pull-right">{{ object.item_reward.name }}</span></p>
+                                {% elif object.discount_type = 'service_reward' %}
+                                <p><b>Service reward</b>
+                                    <span class="pull-right">{{ object.service_reward }}</span></p>
+                                {% else %}
+                                <p><b>Money reward</b>
+                                    <span class="pull-right">{{ object.money_reward }}</span></p>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="box-footer text-center">
+                        {% if request.session.business.id = business_id %}
+                        {% else %}
+                        <form action="" method="POST">{% csrf_token %}
+                            <button type="submit" name="ticket_benefit" value="{{object.id}}" class="btn btn-flat pull-right btn-success"><i class="fa fa-plus"></i> Add to my benefits</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends "BaseApp/base.html" %}
+{% block content %}
+<section class="content-header">
+    <div class="box box-default">
+        <div class="box-header with-border">
+            <h3 class="box-title">{{object.friend_benefit.benefit.title}}</h3>
+        </div>
+        <div class="box-body">
+            <ul class="list-group list-group-unbordered">
+                <li class="list-group-item">
+                    <b>Business</b>
+                    <a class="pull-right" href="{% url 'business details' object.friend_benefit.benefit.business.id %}">
+                        <img src="{{ object.friend_benefit.benefit.business.image.url }}" class="img-rounded list-image" alt="Image">
+                        {{ object.friend_benefit.benefit.business }}
+                    </a>
+                </li>
+                <li class="list-group-item">
+                    <b>User</b>
+                    <a class="pull-right" href="{% url 'user details' object.user.id %}">
+                        <img src="{{ object.user.image.url }}" class="img-rounded list-image" alt="Image">
+                        {{ object.user }}
+                    </a>
+
+                </li>
+                <li class="list-group-item">
+                    <p><b>Description</b>
+                        <span class="pull-right">{{ object.friend_benefit.benefit.text }}</span></p>
+                </li>
+                <li class="list-group-item">
+                    <p><b>Starting date</b>
+                        <span class="pull-right">{{ object.friend_benefit.benefit.starting_date|date:"d/m/Y" }}</span></p>
+                    <p><b>Ending date</b>
+                        <span class="pull-right">{{ object.friend_benefit.benefit.ending_date|date:"d/m/Y" }}</span></p>
+                </li>
+                <li class="list-group-item">
+                    <div class="container-full">
+                        <div><b>Progress</b>
+                            <span class="badge bg-red pull-right">
+                                {{ object.counter }} / {{ object.friend_benefit.required_friends }}
+                            </span>
+                        </div>
+                        <div>&nbsp;</div>
+                        <div class="progress progress-xs">
+                            <div class="progress-bar progress-bar-danger" style="width:{{object.get_percents}}%">
+                            </div>
+
+                        </div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    {% if object.discount_type = 'item_reward' %}
+                    <p><b>Item reward</b>
+                        <span class="pull-right">{{ object.friend_benefit.item_reward.item.name }}</span></p>
+                    {% elif object.discount_type = 'service_reward' %}
+                    <p><b>Service reward</b>
+                        <span class="pull-right">{{ object.friend_benefit.service_reward }}</span></p>
+                    {% else %}
+                    <p><b>Money reward</b>
+                        <span class="pull-right">{{ object.friend_benefit.money_reward|floatformat }} <i class="fa fa-sheqel"></i> </span></p>
+                    {% endif %}
+                </li>
+            </ul>
+            <a class="pull-right" href="{% url 'friends list' %}"  data-target="#my-modal">
+                Invite a friend
+                <div class="no-margin btn btn-circle-small btn-success" style="padding:3px;">
+                    <i class="fa fa-plus"></i>
+                </div>
+            </a>
+        </div>
+
+        <div class="box-footer text-center">
+
+
+            {% if request.session.business %}
+            <a href="{% url 'my business friend benefit list' %}" class="btn btn-primary btn-block btn-warning pull-left">
+                <b>Back to the list</b>
+            </a>
+            {% else %}
+            <a href="{% url 'my user friend benefit list' %}" class="btn btn-primary btn-block btn-warning pull-left">
+                <b>Back to the list</b>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

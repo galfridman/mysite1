@@ -1,0 +1,48 @@
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title">Users statistics</h3>
+    </div><!-- /.box-header -->
+    <div class="box-body" style="overflow: auto;">
+        <table id="users-table" class="table table-bordered table-hover">
+            <thead>
+            <tr>
+                <th width="10px" rowspan="2">Image</th>
+                <th rowspan="2">Name</th>
+                <th colspan="4">Orders</th>
+                <th colspan="3">Completed benefits</th>
+            </tr>
+
+
+
+            <tr>
+                <th>Amount</th>
+                <th>Total</th>
+                <th>Average</th>
+                <th>Items</th>
+                <th>Friend</th>
+                <th>Ticket</th>
+                <th>Discount</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for user in request.session.business.followers_statistics %}
+            {% for user, statistics in user.items %}
+            <tr>
+                <td><img src="{{ user.image.url }}" class="img-rounded list-image" alt="Image"></td>
+                <td><a href="{{user.get_absolute_url}}">{{user}}</a></td>
+                <td>{{statistics.orders_count | floatformat}}</td>
+                <td>{{statistics.orders_total | floatformat}}</td>
+                <td>{{statistics.order_average | floatformat}}</td>
+                <td>{{statistics.items_count | floatformat}}</td>
+                <td>{{statistics.friend_benefits_count | floatformat}}</td>
+                <td>{{statistics.ticket_benefits_count | floatformat}}</td>
+                <td>{{statistics.discount_benefits_count | floatformat}}</td>
+            </tr>
+            {% endfor %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div><!-- /.box-body -->
+</div><!-- /.box -->
+
+

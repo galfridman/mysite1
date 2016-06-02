@@ -1,0 +1,82 @@
+{% extends "BaseApp/base.html" %}
+{% load widget_tweaks %}
+{% load app_filters %}
+{% block content %}
+<div class="box box-body">
+    <div class="form-group pull-right">
+        <input type="text" class="search form-control" placeholder="What you looking for?">
+    </div>
+    <span class="counter pull-right"></span>
+    <table class="table table-hover table-bordered results">
+        <thead>
+        <tr>
+            {% if request.session.business %}
+            <th>User</th>
+            {% else %}
+            <th>Business</th>
+            {% endif %}
+            <th>Title</th>
+            <th style="min-width: 50px;">Progress</th>
+            <th>Reward</th>
+        </tr>
+        <tr class="warning no-result">
+            <td colspan="4"><i class="fa fa-warning"></i> No result</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for o in objects_list %}
+        {% if request.session.business = o.ticket_benefit.benefit.business %}
+        <tr data-href="{% url 'my user ticket benefit details' o.id %}">
+            <td>
+                <a href="{% url 'user details' o.user.id %}">
+                    <img src="{{ o.user.image.url }}" class="img-rounded list-image" alt="Image">
+                    {{ o.user }}
+                </a>
+            </td>
+            {% else %}
+        <tr data-href="{% url 'my business ticket benefit details' o.id %}">
+            <td>
+                <a href="{% url 'business details' o.ticket_benefit.benefit.business.id %}">
+                    <img src="{{ o.ticket_benefit.benefit.business.image.url }}" class="img-rounded list-image" alt="Image">
+                    {{ o.ticket_benefit.benefit.business }}
+                </a>
+            </td>
+            {% endif %}
+            <td>
+                <span class="push-left">
+                    <label>{{ o.ticket_benefit.benefit.title }}</label>
+                </span>
+            </td>
+            <td>
+                <div class="progress progress-xs">
+                    <div class="progress-bar progress-bar-danger" style="width:{{o.get_percents}}%"></div>
+                </div>
+            </td>
+            {% if o.ticket_benefit.reward_type = 'item_reward' %}
+            <td>
+                <span class="push-left">
+                    <label>{{ o.ticket_benefit.item_reward }}</label>
+                </span>
+            </td>
+            {% elif o.ticket_benefit.reward_type = 'service_reward' %}
+            <td>
+                <span class="push-left">
+                    <label>{{ o.ticket_benefit.service_reward }}</label>
+                </span>
+            </td>
+            {% else %}
+            <td>
+                <span class="push-left">
+                    <label>{{ o.ticket_benefit.money_reward|floatformat }} <i class="fa fa-sheqel" ></i></label>
+                </span>
+            </td>
+            {% endif %}
+        </tr>
+        {% empty %}
+        <tr>no benefits</tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+

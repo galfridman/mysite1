@@ -1,0 +1,164 @@
+{% extends "conversation/conversation_base.html" %}
+{% load i18n conversation_tags %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+{% load app_filters %}
+{% block head_title %}
+{% endblock %}
+
+{% block content %}
+
+<section class="content">
+
+    <div class="box box-default">
+        <div class="box-header with-border">
+            {% if order.dispute %}
+            {% else %}
+            <div class="pull-right">
+                <form id="dispute" action="{% url 'my user dispute create' %}" method="GET">
+                    <div class="input-group container-full">
+                        <button type="submit" form="dispute" name="order_id" class="btn submit-btn-block btn-danger" value="{{object.id}}">
+                            Start a dispute
+                        </button>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+            <h3 class="box-title">Order details</h3>
+        </div>
+        <div class="box-body" style="display: block;">
+            <ul class="list-group list-group-unbordered">
+                <li class="list-group-item">
+                    <b>Business</b>
+                    <a class="pull-right" href="{% url 'business details' object.business.id %}">
+                        <img src="{{ object.business.image.url }}" class="img-rounded list-image" alt="Image">
+                        {{ object.business }}
+                    </a>
+                </li>
+                <li class="list-group-item">
+                    <b>User</b>
+                    <a class="pull-right" href="{% url 'user details' object.user.id %}">
+                        <img src="{{ object.user.image.url }}" class="img-rounded list-image" alt="Image">
+                        {{ object.user }}
+                    </a>
+                </li>
+                <li class="list-group-item">
+                    <b>Type</b> <a class="pull-right">{{ object.type }}</a>
+                </li>
+                {% if object.type != 'DELIVERY' %}
+                <li class="list-group-item">
+                    <b>Picking time</b> <a class="pull-right">{{ object.picking_time }}</a>
+                </li>
+                {% else %}
+                <li class="list-group-item">
+                    <label><b>Delivery address</b></label>
+                    <p><b>Country:</b><a class="pull-right"> {{object.address.country}}</a></p>
+                    <p><b>State:</b><a class="pull-right"> {{object.address.state}}</a></p>
+                    <p><b>City:</b><a class="pull-right"> {{object.address.city}}</a></p>
+                    <p><b>Street:</b><a class="pull-right"> {{object.address.street_name}} {{object.address.street_number}}</a></p>
+                    <p><b>Postal:</b><a class="pull-right"> {{object.address.zip_code}}</a></p>
+                </li>
+                {% endif %}
+                <li class="list-group-item">
+                    <b>Total</b> <a class="pull-right">{{ object.total }} <i class="fa fa-sheqel"></i></a>
+                </li>
+                <li class="list-group-item">
+                    <b>Phone</b> <a class="pull-right">{{ object.phone }}</a>
+                </li>
+                <li class="list-group-item">
+                    <b>Created at</b> <a class="pull-right">{{ object.created_at|date:"d.m.Y, H:i"}}</a>
+                </li>
+                <li class="list-group-item">
+                    <b>Conversation</b> <a href="{% url 'conversation_update' object.appconversation.conversation.id%}" class="pull-right">Go to chat!</a>
+                </li>
+            </ul>
+        </div>
+        <div class="box-footer text-center">
+            {% if object.status = "pending" and request.session.business = object.business %}
+            <div class="input-group container-full">
+                <form action="#" method="GET">
+                    <button type="submit" name="accept" class="btn btn-social btn-flat btn-success pull-right" value="{{object.id}}">
+                        <i class="fa fa-check"></i>
+                        <b>Accept</b>
+                    </button>
+                    <button type="submit" name="reject" class="btn btn-social btn-flat btn-danger pull-left" value="{{object.id}}">
+                        <i class="fa fa-times"></i>
+                        <b>Decline</b>
+                    </button>
+                </form>
+            </div>
+            <div>&nbsp;</div>
+            {% endif %}
+            {% if request.session.business.id = object.business.id %}
+            <a href="{% url 'my business order list' %}" class="btn btn-primary btn-block btn-warning pull-left">
+                <b>Back to the list</b>
+            </a>
+            {% else %}
+
+            <a href="{% url 'my user order list' %}" class="btn btn-primary btn-block btn-warning pull-left">
+
+                <b>Back to the list</b>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="box box-default">
+        <div class="box-header with-border">
+            <h3 class="box-title">Items in order</h3>
+
+            <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+            </div>
+        </div>
+        <div class="box-body" style="display: block;">
+            <label>Items in order</label>
+            <ul class="products-list product-list-in-box">
+                {% for order_item in object.item_orders.all %}
+                <li class="item searchable box-overflow">
+                    <span class="info-box-image"><img src="{{order_item.item.image.url}}"></span>
+                    <div class="info-box-content">
+                        {% for benefit in user.appuser.user_discount_benefits.all %}
+                        {% if order_item.item.itemdiscount %}
+                        {% if order_item.item.itemdiscount in benefit.discount_benefit.item_discounts.all and benefit.discount_benefit.benefit.is_available %}
+                        <span class="info-box-more pull-right pull-top text-red"><del>{{ order_item.item.price| stringformat:'d' }}</del><i class="fa fa-sheqel"></i></span>
+                        <span class="info-box-more pull-right pull-top text-green">{{ order_item.item.itemdiscount.new_price| stringformat:'d' }}<i class="fa fa-sheqel"></i></span>
+                        {% endif %}
+                        {% else %}
+                        <span class="info-box-more pull-right pull-top">{{ order_item.item.price }}<i class="fa fa-sheqel"></i></span>
+                        {% endif %}
+                        {% empty %}
+                        <span class="info-box-more pull-right pull-top">{{ order_item.item.price }}<i class="fa fa-sheqel"></i></span>
+                        {% endfor %}
+                        <span class="info-box-text"><b>Name:</b> {{ order_item.item.name }}</span>
+                        <span class="info-box-more"><b>Description:</b> {{ order_item.item.description }}</span>
+                        <span class="info-box-more"><b>Quantity:</b> {{ order_item.quantity }}</span>
+                        <span class="info-box-more small pull-bottom pull-right"><b>Changed at:</b> {{ order_item.item.changed_at|date:"d.m.Y, H:i" }}</span>
+
+                    </div>
+                </li>
+                {% endfor %}
+                <li class="list-group-item">
+                    <div class="container-full box-overflow">
+                        <b>Used coupons</b>
+                        {% for coupon in object.money_coupons.all %}
+                        <div><a href="#" class="pull-right">
+                            Get {{coupon.money_reward }}<i class="fa fa-sheqel"> dicount</i> .
+                        </a></div>
+                        {% endfor %}
+                        {% for coupon in object.item_coupons.all %}
+                        <div>
+                            <a href="#" class="pull-right">
+                                Get free item: {{coupon.item }}.
+                            </a>
+                        </div>
+                        {% endfor %}
+                        </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</section>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends "BaseApp/base.html" %}
+{% load i18n conversation_tags %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+{% load app_filters %}
+{% block head_title %}
+{% endblock %}
+
+{% block content %}
+<div class="box box-default">
+    <div class="box-header with-border">
+        <h3 class="box-title">Dispute details</h3>
+
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+            </button>
+        </div>
+        <!-- /.box-tools -->
+    </div>
+    <!-- /.box-header -->
+    <div class="box-body" style="display: block;">
+        <ul class="list-group list-group-unbordered">
+            {% if object.appointment %}
+            <li class="list-group-item">
+                <b>Appointment ID</b> <a href="{% url 'my user order details' object.appointment.id %}" class="pull-right">{{ object.appointment.id }}</a>
+            </li>
+            {% else %}
+            <li class="list-group-item">
+                <b>Order ID</b> <a href="{% url 'my user order details' object.order.id %}" class="pull-right">{{ object.order.id }}</a>
+            </li>
+            {% endif %}
+            <li class="list-group-item">
+                <b>Business</b>
+                <a class="pull-right" href="{% url 'business details' object.business.id %}">
+                    <img src="{{ object.business.image.url }}" class="img-rounded list-image" alt="Image">
+                    {{ object.business }}
+                </a>
+            </li>
+            <li class="list-group-item">
+                <b>User</b>
+                <a class="pull-right" href="{% url 'user details' object.user.id %}">
+                    <img src="{{ object.user.image.url }}" class="img-rounded list-image" alt="Image">
+                    {{ object.user }}
+                </a>
+
+            </li>
+            <li class="list-group-item">
+                <b>Created at</b> <a class="pull-right">{{ object.created_at|date:"d.m.Y, H:i"}}</a>
+            </li>
+            <li class="list-group-item">
+                <b>Conversation</b> <a href="{% url 'conversation_update' object.appconversation.conversation.id%}" class="pull-right">Go to chat!</a>
+            </li>
+
+
+        </ul>
+    </div>
+    <!-- /.box-body -->
+    <div class="box-footer text-center">
+        {% if object.status = "pending" and request.session.business = object.business %}
+            <div class="input-group container-full">
+                <form action="#" method="GET">
+                    <button type="submit" name="accept" class="btn btn-social btn-success pull-right" value="{{object.id}}">
+                        <i class="fa fa-check"></i>
+                        <b>Accept</b>
+                    </button>
+                    <button type="submit" name="reject" class="btn btn-social btn-danger pull-left" value="{{object.id}}">
+                        <i class="fa fa-times"></i>
+                        <b>Decline</b>
+                    </button>
+                </form>
+            </div>
+            <div>&nbsp;</div>
+            {% endif %}
+        {% if request.session.business.id = object.business.id %}
+        <a href="{% url 'my business order list' %}" class="btn btn-primary btn-block btn-warning pull-right">
+            <b>Back to the list</b>
+        </a>
+        {% else %}
+        <a href="{% url 'my user order list' %}" class="btn btn-primary btn-block btn-warning pull-right">
+            <b>Back to the list</b>
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+
+{% endblock %}

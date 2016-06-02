@@ -1,0 +1,332 @@
+{% extends "BaseApp/base_load.html" %}
+{% load app_filters %}
+{% block head_title %}{% endblock %}
+{% load widget_tweaks %}
+{% load notification_tags %}
+
+
+{% block body %}
+
+<div class="wrapper">
+
+    <header class="main-header">
+        <!-- Logo -->
+        <a href="#" class="logo">
+            <!-- mini logo for sidebar mini 50x50 pixels -->
+            <span class="logo-mini"><b>My</b>Project</span>
+            <!-- logo for regular state and mobile devices -->
+            <span class="logo-lg"><b>My</b>Project</span>
+        </a>
+        <!-- Header Navbar: style can be found in header.less -->
+        <nav class="navbar navbar-static-top" role="navigation">
+            <!-- Sidebar toggle button-->
+            <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                <span class="sr-only">Toggle navigation</span>
+            </a>
+            <div class="navbar-custom-menu">
+                <ul class="nav navbar-nav">
+                    <!-- Messages: style can be found in dropdown.less-->
+                    <li class="dropdown messages-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-envelope-o"></i>
+                            {% if user.unread_conversations.count != 0 %}
+                            <span class="label label-success">{{ business.business_app_conversations.all.count }}</span>
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li class="header">You have {{ user.unread_conversations.count }} unread conversations</li>
+                            <li>
+                                <!-- inner menu: contains the actual data -->
+                                <ul class="menu">
+                                    {% for c in user.conversations.all %}
+                                    {% if c.appconversation.is_regular %}
+                                    <li><!-- start message -->
+                                        <a href="{% url 'conversation_update' c.id%}">
+                                            <div class="pull-left">
+                                                <img src="{{ c.appconversation.appuser.image.url }}" class="img-circle" alt="User Image">
+                                            </div>
+                                            <h4>
+                                                <small><i class="fa fa-clock-o"></i> {{ c.get_last_message.date|timesince|upto:',' }} ago</small>
+                                                {% if c.user.appuser not in c.appconversation.business.managers.all %}
+                                                {{ c.appconversation.business.name }}
+                                                {% else %}
+                                                {{ c.appconversation.appuser }}
+                                                {% endif %}
+                                            </h4>
+                                            <p>
+                                                {% if c.get_last_message.user.appuser in c.appconversation.business.managers.all %}
+                                                {{ c.appconversation.business.name }}
+                                                {% else %}
+                                                {{ c.appconversation.appuser }}
+                                                {% endif %}
+                                                : {{c.get_last_message.text}}
+                                            </p>
+                                        </a>
+                                    </li><!-- end message -->
+                                    {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                            <li class="footer"><a href="{% url 'my business conversation list'%}" >See All Messages</a></li>
+                        </ul>
+                    </li>
+                    <!-- Notifications: style can be found in dropdown.less -->
+                    <li class="dropdown notifications-menu mark-all-notifications" data-mark-action="read">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false"><i class="fa fa-bell-o"></i>
+                            {% if user.notifications.unread.count > 0 %}
+                            <span id="notifications-refresh" class="label label-warning">{{ user.notifications.unread.count }}</span>
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li class="header ">
+                                <a class="mark-all-notifications pull-right" data-mark-action="read"><span>mark all as read</span></a>
+                                <label class="center">You have {{ user.notifications.unread.count }} new notifications</label>
+                            </li>
+                            <li>
+                                <div class="notificationPanel">
+                                    <div class="notificationContent">
+                                        <ul class="menu notification-box-list">
+                                            {% render_notifications using user.notifications.active.prefetch %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- Tasks: style can be found in dropdown.less -->
+                    <li>
+                        <a href="#" data-toggle="control-sidebar"><i class="fa fa-bookmark-o"></i></a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <!-- Left side column. contains the logo and sidebar -->
+    <aside class="main-sidebar">
+        <!-- sidebar: style can be found in sidebar.less -->
+        <section class="sidebar">
+            <!-- Sidebar user panel -->
+            <div class="user-panel">
+                <div class="pull-left image">
+                    <img src="{{ user.appuser.image.url }}" class="img-circle" alt="User Image">
+                </div>
+                <div class="pull-left info">
+                    <p>{{ user.appuser }}</p>
+                    <a href="{% url 'user details' user.appuser.id %}"> View Profile</a>
+                </div>
+            </div>
+            <!-- search form -->
+            <form action="{% url 'search' %}" method="GET" class="sidebar-form">
+                <div class="input-group">
+                    <input type="text" name="q" class="form-control" placeholder="Search business...">
+						<span class="input-group-btn">
+							<button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
+						</span>
+                </div>
+            </form>
+            <!-- /.search form -->
+            <!-- sidebar menu: : style can be found in sidebar.less -->
+            <ul class="sidebar-menu">
+                <li class="header">MAIN NAVIGATION</li>
+                <li class="active">
+                    <a href="{% url 'my user newsfeed' %}">
+                        <i class="fa fa-newspaper-o"></i> <span>News Feed</span>
+                    </a>
+                </li>
+                <li class="{% url 'my user newsfeed' %}">
+                    <a href="{% url 'my user appointment list' %}">
+                        <i class="fa fa-calendar"></i> <span>Appointments</span>
+                    </a>
+                </li>
+                <li class="{% url 'my user newsfeed' %}">
+                    <a href="{% url 'my user order list' %}">
+                        <i class="fa fa-shopping-cart"></i> <span>Orders</span>
+                    </a>
+                </li>
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-gift"></i> <span>Benefits</span> <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="{% url 'my user friend benefit list' %}"><i class="fa fa-user-plus"></i>Friend Benefits</a></li>
+                        <li><a href="{% url 'my user discount benefit list' %}"><i class="fa fa-shekel"></i>Discount Benefits</a></li>
+                        <li><a href="{% url 'my user ticket benefit list' %}"><i class="fa fa-ticket"></i>Ticket Benefits</a></li>
+                    </ul>
+                </li>
+                <li class="">
+                    <a href="{% url 'my user dispute list' %}">
+                        <i class="fa fa-wrench"></i> <span>Disputes</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="{% url 'my user conversation list' %}">
+                        <i class="fa fa-envelope-o"></i> <span>Messages</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="{% url 'my user notification list' %}">
+                        <i class="fa fa-bell-o"></i> <span>Notifications</span>
+                    </a>
+
+                    <small class="label pull-right bg-blue"></small>
+                </li>
+                <li class="">
+                    <a href="{% url 'my user request list' %}">
+                        <i class="fa fa-hand-pointer-o"></i> <span>Requests</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="{% url 'my user coupon list' %}">
+                        <i class="fa fa-tags"></i> <span>Coupons</span>
+                    </a>
+                </li>
+                <li>&nbsp;</li>
+                <li>&nbsp;<li>
+                <li class="">
+                    <a href="{% url 'account_logout' %}">
+                        <i class="fa fa-sign-out"></i> <span>Log Out</span>
+                    </a>
+                </li>
+
+            </ul>
+        </section>
+        <!-- /.sidebar -->
+    </aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper" id="content">
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        <section class="content">
+            {% block content %}
+            {% endblock %}
+            {% block extra_body %}
+            {% endblock %}
+        </section>
+    </div><!-- /.content-wrapper -->
+    <footer class="main-footer">
+        <div class="pull-right hidden-xs">
+            <b>Version</b> 1.0.0
+        </div>
+        <strong>My project</strong>
+    </footer>
+
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+        <!-- Create the tabs -->
+        <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+            <li class="active"><a href="#control-sidebar-favorites-tab" data-toggle="tab"><i class="fa fa-heart-o"></i></a></li>
+            <li><a href="#control-sidebar-businesses-tab" data-toggle="tab"><i class="fa fa-suitcase"></i></a></li>
+            <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <!-- Home tab content -->
+            <div class="tab-pane active" id="control-sidebar-favorites-tab">
+                <h3 class="control-sidebar-heading">Favorite Businesses</h3>
+                <ul class="control-sidebar-menu">
+                    {% for f in request.session.favorites %}
+                    <li>
+                        <a href="{% url 'business details' f.id %}">
+                            <div class="pull-left image">
+                                <img src="{{ f.image.url }}" class="menu-icon img-circle" alt="User Image">
+                            </div>
+                            <div class="menu-info">
+                                <h4 class="control-sidebar-subheading">{{ f.name }}</h4>
+                                <p>{{ f.description }}</p>
+                            </div>
+                        </a>
+                    </li>
+                    {% empty %}
+                    <p>No favorites yet</p>
+                    {% endfor %}
+                </ul><!-- /.control-sidebar-menu -->
+            </div><!-- /.tab-pane -->
+            <!-- Stats tab content -->
+            <div class="tab-pane" id="control-sidebar-businesses-tab">
+
+                <h3 class="control-sidebar-heading header">My Businesses
+                    <a href="{% url 'business create' %}" class="btn btn-sm btn-success btn-circle pull-right">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                </h3>
+
+                <ul class="control-sidebar-menu">
+                    {% for b in request.session.businesses %}
+                    <li>
+                        <a href="{% url 'login_business' b.id %}">
+                            <img src="{{ b.image.url }}" class="menu-icon img-circle" alt="User Image">
+                            <div class="menu-info">
+                                <h4 class="control-sidebar-subheading">{{ b.name }}</h4>
+                                <p>{{ b.description }}</p>
+                            </div>
+                        </a>
+                    </li>
+                    {% empty %}
+                    <li>You are not manager in a business yet</li>
+                    {% endfor %}
+                </ul><!-- /.control-sidebar-menu -->
+            </div><!-- /.tab-pane -->
+            <!-- Settings tab content -->
+            <div class="tab-pane" id="control-sidebar-settings-tab">
+                <h3 class="control-sidebar-heading header">My Friends
+                    <a href="{% url 'business create' %}" class="btn btn-sm btn-success btn-circle pull-right">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                </h3>
+
+                <ul class="control-sidebar-menu">
+                    {% for friend in user.appuser.friends.all %}
+                    <li>
+                        <a href="{{ friend.get_absolute_url }}">
+                            <img src="{{ friend.image.url }}" class="menu-icon img-circle" alt="User Image">
+                            <div class="menu-info">
+                                <h4 class="control-sidebar-subheading">{{ friend }}</h4>
+                                <p>{{ friend.address.city }}</p>
+                            </div>
+                        </a>
+                    </li>
+                    {% empty %}
+                    <li>You have no friends yet</li>
+                    {% endfor %}
+                </ul><!-- /.control-sidebar-menu -->
+                <!--<form method="post">-->
+                <!--<h3 class="control-sidebar-heading">General Settings</h3>-->
+                <!--<div class="form-group">-->
+                <!--<label class="control-sidebar-subheading">-->
+                <!--setting 1-->
+                <!--<input type="checkbox" class="pull-right" checked>-->
+                <!--</label>-->
+                <!--<p>-->
+                <!--Some information about this general settings option-->
+                <!--</p>-->
+                <!--</div>&lt;!&ndash; /.form-group &ndash;&gt;-->
+                <!--</form>-->
+            </div><!-- /.tab-pane -->
+        </div>
+    </aside><!-- /.control-sidebar -->
+    <!-- Add the sidebar's background. This div must be placed
+    immediately after the control sidebar -->
+    <div class="control-sidebar-bg"></div>
+</div><!-- ./wrapper -->
+{% endblock %}
+
+{% block base-scripts %}
+<script>
+    function refresh() {
+        $( "#notifications-refresh" ).load( "{% url 'refresh' %} #notifications-refresh" );
+        $( "#notifications-refresh-menu" ).load( "{% url 'refresh' %} #notifications-refresh" );
+        setTimeout("refresh()", 10000);
+    }
+
+    $(function(){
+        refresh();
+    });
+</script>
+{% endblock %}

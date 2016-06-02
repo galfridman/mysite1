@@ -1,0 +1,59 @@
+{% extends "BaseApp/base.html" %}
+{% block content %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+<!-- Main content -->
+<section class="content">
+    <div class="box box-solid">
+        <div class="box-header with-border ">
+            <h3>Create Appointment - Step 1</h3>
+
+        </div>
+        <div class="box-body">
+            <div class="input-group has-feedback pull-right clear-both inline">
+                <input id="search-input" type="text" class="form-control" placeholder="Search a service...">
+                <span class="form-control-feedback"><i class="fa fa-search"></i></span>
+            </div>
+            <div>&nbsp;</div><div>&nbsp;</div>
+
+            <form action="" method="GET" enctype="multipart/form-data">
+                <div class="box-services">
+                    <ul class="products-list product-list-in-box">
+                        {% for service in service_list %}
+                        <li class="item searchable box-overflow">
+                            <span class="info-box-image"><img src="{{service.image.url}}"></span>
+                            <div class="info-box-content">
+                                {% for benefit in user.appuser.user_discount_benefits.all %}
+                                {% if object.servicediscount %}
+                                {% if object.servicediscount in benefit.discount_benefit.service_discounts.all and benefit.discount_benefit.benefit.is_available %}
+                                <span class="info-box-more pull-right pull-top text-red"><del>{{ object.price| stringformat:'d' }}</del><i class="fa fa-sheqel"></i></span>
+                                <span class="info-box-more pull-right pull-top text-green">{{ object.servicediscount.new_price| stringformat:'d' }}<i class="fa fa-sheqel"></i></span>
+                                {% endif %}
+                                {% else %}
+                                <span class="info-box-more pull-right pull-top">{{ object.price }}<i class="fa fa-sheqel"></i></span>
+                                {% endif %}
+                                {% empty %}
+                                <span class="info-box-more pull-right pull-top">{{ object.price }}<i class="fa fa-sheqel"></i></span>
+                                {% endfor %}
+                                <span class="info-box-text"><b>Name:</b> {{ service.name }}</span>
+                                <span class="info-box-more"><b>Description:</b> {{ service.description }}</span>
+                                <div class="pull-right"><input type="radio" name='service_id' value="{{ service.id }}"/></div>
+                                <span class="info-box-more"><b>Duration:</b> {{ service.duration }}</span>
+                                <div>&nbsp;</div>
+                                <span class="info-box-more small pull-bottom pull-right"><b>Changed at:</b> {{ service.changed_at|date:"d.m.Y, H:i" }}</span>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <hr>
+                    <label>Select date</label>
+                    <input type="date" name="date" class="form-control" placeholder="Select date...">
+                    <hr>
+                    <button type="submit" name="submit" class="btn btn-primary btn-block btn-flat">Continue to time selection</button>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

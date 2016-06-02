@@ -1,0 +1,24 @@
+{% extends "BaseApp/base_load.html" %}
+
+{% load i18n %}
+{% load account socialaccount %}
+
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
+
+{% block content %}
+<div class="login-box">
+  <div class="login-logo">
+    <a href="#"><b>My</b>Project</a>
+  </div>
+  <!-- /.login-logo -->
+  <div class="login-box-body">
+    <div class="social-auth-links text-center">
+      <a href="/accounts/facebook/login/" class="btn btn-block btn-social btn-facebook btn-flat"><i class="fa fa-facebook"></i> Sign in using
+        Facebook</a>
+
+    </div>    {% include "socialaccount/snippets/login_extra.html" %}
+  </div>
+  <!-- /.social-auth-links -->
+</div>
+<!-- /.login-box-body -->
+{% endblock %}

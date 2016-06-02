@@ -1,0 +1,291 @@
+{% extends "BaseApp/base_load.html" %}
+{% load app_filters %}
+{% load notification_tags %}
+{% load staticfiles %}
+{% block head_title %}{% endblock %}
+{% block body %}
+
+<div class="wrapper">
+
+    <header class="main-header">
+        <a href="#" class="logo">
+            <span class="logo-mini"><b>My</b>Project</span>
+            <span class="logo-lg"><b>My</b>Project</span>
+        </a>
+        <nav class="navbar navbar-static-top" role="navigation" id="nav-bar">
+            <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                <span class="sr-only">Toggle navigation</span>
+            </a>
+            <div class="navbar-custom-menu">
+                <ul class="nav navbar-nav">
+                    <li class="dropdown messages-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <i class="fa fa-envelope-o"></i>
+                            {% if user.unread_conversations.count != 0 %}
+                            <span class="label label-success">{{ business.business_app_conversations.all.count }}</span>
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li class="header">You have {{ user.unread_conversations.count }} unread conversations</li>
+                            <li>
+                                <ul class="menu">
+                                    {% for c in user.conversations.all %}
+                                    {% if c.appconversation.is_regular %}
+                                    <li>
+                                        <a href="{% url 'conversation_update' c.id%}">
+                                            <div class="pull-left">
+                                                <img src="{{ c.appconversation.appuser.image.url }}" class="img-circle" alt="User Image">
+                                            </div>
+                                            <h4>
+                                                <small><i class="fa fa-clock-o"></i> {{ c.get_last_message.date|timesince|upto:',' }} ago</small>
+                                                {% if c.user.appuser not in c.appconversation.business.managers.all %}
+                                                {{ c.appconversation.business.name }}
+                                                {% else %}
+                                                {{ c.appconversation.appuser }}
+                                                {% endif %}
+                                            </h4>
+                                            <p>
+                                                {% if c.get_last_message.user.appuser in c.appconversation.business.managers.all %}
+                                                {{ c.appconversation.business.name }}
+                                                {% else %}
+                                                {{ c.appconversation.appuser }}
+                                                {% endif %}
+                                                : {{c.get_last_message.text}}
+                                            </p>
+                                        </a>
+                                    </li>
+                                    {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                            <li class="footer"><a href="{% url 'my business conversation list'%}" >See All Messages</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown notifications-menu " >
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false"><i class="fa fa-bell-o"></i>
+                            {% if user.notifications.unread.count > 0 %}
+                            <span id="notifications-refresh" class="label label-warning">{{ user.notifications.unread.count }}</span>
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu">
+
+                            <li class="header ">
+                                <a class="mark-all-notifications pull-right" data-mark-action="read"><span>mark all as read</span></a>
+                                <label class="center">You have {{ user.notifications.unread.count }} new notifications</label>
+                            </li>
+                            <li>
+                                <div class="notificationPanel">
+                                    <div class="notificationContent">
+                                        <ul class="menu notification-box-list">
+                                            {% render_notifications using user.notifications.active.prefetch %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#" data-toggle="control-sidebar"><i class="fa fa-bookmark-o"></i></a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <aside class="main-sidebar">
+        <section class="sidebar">
+            <div class="user-panel">
+                <div class="pull-left image">
+                    <img src="{{ request.session.business.image.url }}" class="img-circle" alt="User Image">
+                </div>
+                <div class="pull-left info">
+                    <p>{{ request.session.business }}</p>
+                    <a href="{% url 'business details' request.session.business.id %}"> View Profile</a>
+                </div>
+            </div>
+            <form action="{% url 'search' %}" method="GET" class="sidebar-form">
+                <div class="input-group">
+                    <input type="text" name="q" class="form-control" placeholder="Search user...">
+						<span class="input-group-btn">
+							<button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
+						</span>
+                </div>
+            </form>
+            <ul class="sidebar-menu">
+                <li class="header">MAIN NAVIGATION</li>
+                <li class="active">
+                    <a href="{% url 'default' %}">
+                        <i class="fa fa-newspaper-o"></i> <span>News Feed</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="{% url 'my business appointment list'%}">
+                        <i class="fa fa-calendar"></i> <span>Appointments</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="{% url 'my business order list' %}">
+                        <i class="fa fa-shopping-cart"></i> <span>Orders</span>
+                    </a>
+                </li>
+                <li class="treeview">
+                    <a href="#">
+                        <i class="fa fa-gift"></i> <span>Benefits</span> <i class="fa fa-angle-left pull-right"></i>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li><a href="{% url 'my business friend benefit list' %}"><i class="fa fa-user-plus"></i>Friend Benefits</a></li>
+                        <li><a href="{% url 'my business discount benefit list' %}"><i class="fa fa-shekel"></i>Discount Benefits</a></li>
+                        <li><a href="{% url 'my business ticket benefit list' %}"><i class="fa fa-ticket"></i>Ticket Benefits</a></li>
+                    </ul>
+                </li>
+                <li class="">
+                    <a href="{% url 'my business conversation list' %}">
+                        <i class="fa fa-envelope-o"></i> <span>Messages</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="{% url 'my business notification list' %}">
+                        <i class="fa fa-bell-o"></i> <span>Notifications</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="{% url 'my business request list' %}">
+                        <i class="fa fa-hand-pointer-o"></i> <span>Requests</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="{% url 'my user coupon list' %}">
+                        <i class="fa fa-tags"></i> <span>Coupons</span>
+                    </a>
+                </li>
+
+                <li>&nbsp;</li>
+                <li>&nbsp;<li>
+                <li class="">
+                    <a href="{% url 'logout_business' %}">
+                        <i class="fa fa-user"></i> <span>Back to user</span>
+                    </a>
+                </li>
+
+            </ul>
+        </section>
+    </aside>
+
+
+    <div class="content-wrapper" id="content-wrapper-main">
+            {% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+        {% block content %}
+        {% endblock %}
+        {% block extra_body %}
+        {% endblock %}
+
+    </div>
+    <footer class="main-footer">
+        <div class="pull-right hidden-xs">
+            <b>Version</b> 1.0.0
+        </div>
+        <strong>My project</strong>
+    </footer>
+
+    <aside class="control-sidebar control-sidebar-dark">
+        <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+            <li class="active"><a href="#control-sidebar-favorites-tab" data-toggle="tab"><i class="fa fa-heart-o"></i></a></li>
+            <li><a href="#control-sidebar-businesses-tab" data-toggle="tab"><i class="fa fa-suitcase"></i></a></li>
+            <li><a href="#control-sidebar-managers-tab" data-toggle="tab"><i class="fa fa-users"></i></a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="control-sidebar-favorites-tab">
+                <h3 class="control-sidebar-heading">Liked by</h3>
+                <ul class="control-sidebar-menu">
+                    {% for u in request.session.business.followers.all %}
+                    <li>
+                        <a href="{% url 'user details' u.id %}">
+                            <div class="pull-left image">
+                                <img src="{{ u.image.url }}" class="menu-icon img-circle" alt="User Image">
+                            </div>
+                            <div class="menu-info">
+                                <h4 class="control-sidebar-subheading">{{ u }}</h4>
+                            </div>
+                        </a>
+                    </li>
+                    {% endfor %}
+
+                </ul>
+            </div>
+            <div class="tab-pane" id="control-sidebar-businesses-tab">
+                <h3 class="control-sidebar-heading header">My Businesses
+                    <a href="{% url 'business create' %}" class="btn btn-sm btn-success btn-circle pull-right">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                </h3>                <ul class="control-sidebar-menu">
+                {% for b in request.user.appuser.managed_businesses.all %}
+                <li>
+                    <a href="{% url 'login_business' b.id %}">
+                        <img src="{{ b.image.url }}" class="menu-icon img-circle" alt="User Image">
+                        <div class="menu-info">
+                            <h4 class="control-sidebar-subheading">{{ b.name }}</h4>
+                            <p>{{ b.description }}</p>
+                        </div>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            </div>
+            <div class="tab-pane" id="control-sidebar-managers-tab">
+                <h3 class="control-sidebar-heading header">Managers
+                    <a href="{% url 'friends list' %}" class="btn btn-sm btn-success btn-circle pull-right" data-target="#my-modal">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                </h3>
+
+                <ul class="control-sidebar-menu">
+                    {% for manager in request.session.business.managers.all%}
+                    <li>
+                        <a href="{{ manager.get_absolute_url }}">
+                            <img src="{{ manager.image.url }}" class="menu-icon img-circle" alt="User Image">
+                            <div class="menu-info">
+                                <h4 class="control-sidebar-subheading">{{ manager }}</h4>
+                                <p>{{ manager.address.raw }}</p>
+                            </div>
+                        </a>
+                    </li>
+                    {% empty %}
+                    <li>This business have no managers yet</li>
+                    {% endfor %}
+                </ul><!-- /.control-sidebar-menu -->
+                <!--<form method="post">-->
+                    <!--<h3 class="control-sidebar-heading">General Settings</h3>-->
+                    <!--<div class="form-group">-->
+                        <!--<label class="control-sidebar-subheading">-->
+                            <!--setting 1-->
+                            <!--<input type="checkbox" class="pull-right" checked>-->
+                        <!--</label>-->
+                        <!--<p>-->
+                            <!--Some information about this general settings option-->
+                        <!--</p>-->
+                    <!--</div>-->
+                <!--</form>-->
+            </div>
+        </div>
+    </aside>
+    <div class="control-sidebar-bg"></div>
+</div>
+{% endblock %}
+{% block base-scripts %}
+<script>
+    function refresh() {
+        $( "#notifications-refresh" ).load( "{% url 'refresh' %} #notifications-refresh" );
+        setTimeout("refresh()", 10000);
+    }
+
+    $(function(){
+        refresh();
+    });
+</script>
+{% endblock %}

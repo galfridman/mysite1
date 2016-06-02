@@ -1,0 +1,12 @@
+{% extends "BaseApp/base.html" %}
+{% block content %}
+
+<!-- Main content -->
+<section class="content">
+    <form method="POST" action="" enctype="multipart/form-data">{% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Create Business">
+    </form>
+</section>
+
+{% endblock %}

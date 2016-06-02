@@ -1,0 +1,46 @@
+{% extends "BaseApp/base.html" %}
+{% block content %}
+<section class="content-header">
+    {% if business_id = request.session.business.id %}
+    <a href="{% url 'item create' business_id catalog_id %}" class="btn btn-sm btn-success btn-circle pull-right">
+        <i class="fa fa-plus"></i>
+    </a>
+    {% endif %}
+    <h1 class="page-header"> Items List</h1>
+</section>
+<section class="content">
+    {% for o in objects_list %}
+    <a href="{{ o.get_absolute_url }}">
+
+        <div class="info-box box-overflow">
+            <span class="info-box-image"><img src="{{o.image.url}}"></span>
+            <div class="info-box-content ">
+                {% for benefit in user.appuser.user_discount_benefits.all %}
+                {% if o.itemdiscount %}
+                {% if o.itemdiscount in benefit.discount_benefit.item_discounts.all and benefit.discount_benefit.benefit.is_available %}
+                <span class="info-box-more pull-right pull-top text-red"><del>{{ o.price| stringformat:'d' }}</del><i class="fa fa-sheqel"></i></span>
+                <span class="info-box-more pull-right pull-top text-green">{{ o.itemdiscount.new_price| stringformat:'d' }}<i class="fa fa-sheqel"></i></span>
+                {% endif %}
+                {% else %}
+                <span class="info-box-more pull-right pull-top">{{ o.price }}<i class="fa fa-sheqel"></i></span>
+                {% endif %}
+                {% empty %}
+                <span class="info-box-more pull-right pull-top">{{ o.price }}<i class="fa fa-sheqel"></i></span>
+                {% endfor %}
+                <span class="info-box-text"><b>Name:</b> {{ o.name }}</span>
+                <span class="info-box-more"><b>Description:</b> {{ o.description }}</span>
+                {% if o.is_available = 'AVAILABLE' %}
+                <span class="info-box-more text-green">Available</span>
+                {% else %}
+                <span class="info-box-more text-red">Not Available</span>
+                {% endif %}
+                <span class="info-box-more small pull-bottom pull-right"><b>Changed at:</b> {{ o.changed_at|date:"d.m.Y, H:i" }}</span>
+
+            </div>
+
+        </div>
+    </a>
+    {% endfor %}
+
+</section>
+{% endblock %}

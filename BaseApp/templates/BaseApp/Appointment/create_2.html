@@ -1,0 +1,47 @@
+{% extends "BaseApp/base.html" %}
+{% block content %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+<!-- Main content -->
+<section class="content">
+    <div class="box box-solid">
+        <div class="box-header with-border ">
+            <h3>Create Appointment - Step 2</h3>
+
+        </div>
+        <div class="box-body">
+            <h4>Select an hour</h4>
+            <table class="table table-hover">
+                {% for key, value in hours %}
+                <tr>
+                    <td colspan="2">
+                        {{ value.0|date:'H:i' }} - {{ value.2|date:'H:i' }}
+                    </td>
+                    <td colspan="1" class="input-group container-full">
+                        {% if value.1 %}
+                        <form method="GET" id="{{key}}">
+                            <input hidden value="{{value.0|date:'d/m/Y H:i'}}" name="date_time" >
+                            <button form="{{key}}" type="submit" name="submit" value="ok" class="btn btn-circle btn-success pull-right">
+                                <i class="fa fa-clock-o"></i>
+                            </button>
+                        </form>
+                        {%else%}
+                        <div class="btn btn-circle btn-danger pull-right">
+                            <i class="fa fa-clock-o"></i>
+                        </div>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+
+            </table>
+        </div>
+        <div class="box-footer">
+            <a href="{% url 'my user appointment create' %}" class="btn btn-danger btn-block">
+                <label>Previous step </label>
+                <i class="fa fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

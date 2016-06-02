@@ -1,0 +1,130 @@
+{% extends "conversation/conversation_base.html" %}
+{% load i18n conversation_tags %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block head_title %}
+{% endblock %}
+
+{% block content %}
+{% if request.session.business %}
+{% if object.appconversation.order %}
+<a href="{% url 'my business order details' object.appconversation.order.id %}">Back to order</a>
+{% elif object.appconversation.dispute %}
+<a href="{% url 'my business dispute details' object.appconversation.dispute.id %}">back to dispute</a>
+{% else %}
+normal chat
+{% endif %}
+{% else %}
+{% if object.appconversation.order %}
+<a href="{% url 'my user order details' object.appconversation.order.id %}">Back to order</a>
+{% elif object.appconversation.dispute %}
+<a href="{% url 'my user dispute details' object.appconversation.dispute.id %}">back to dispute</a>
+{% else %}
+normal chat
+{% endif %}
+{% endif %}
+{% if object.pk %}
+<div class="box box-info direct-chat direct-chat-info">
+    <div class="box-header with-border">
+        <h3 class="box-title">
+            {% if user == object.appconversation.appuser.user %}
+            <a href="{% url 'business details' object.appconversation.business.id %}">{{object.appconversation.business.name }}</a>
+            {% else %}
+            <a href="{% url 'user details' object.appconversation.appuser.user.id %}">{{object.appconversation.appuser }}</a>
+            {% endif %}
+        </h3>
+
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+            </button>
+        </div>
+    </div>
+    <!-- /.box-header -->
+    <div class="box-body">
+        <!-- Conversations are loaded here -->
+        <div class="direct-chat-messages scroll-down">
+            <!-- Message. Default to the left -->
+            {% for message in object.messages.all %}
+            {% if message.user != user %}
+            <div class="direct-chat-msg">
+                <div class="direct-chat-info clearfix">
+                    <span class="direct-chat-name pull-left">
+                        {% if message.user.appuser in object.appconversation.business.managers.all %}
+                        {{ object.appconversation.business.name }}
+                        {% else %}
+                        {{ message.user.appuser }}
+                        {% endif %}
+                    </span>
+                    <span class="direct-chat-timestamp pull-right">{{ message.date|date:"SHORT_DATETIME_FORMAT" }}</span>
+                </div>
+                <!-- /.direct-chat-info -->
+                {% if message.user.appuser in object.appconversation.business.managers.all %}
+                <img class="direct-chat-img" src="{{ object.appconversation.business.image.url }}" alt="message user image"><!-- /.direct-chat-img -->
+                {% else %}
+                <img class="direct-chat-img" src="{{ message.user.appuser.image }}" alt="message user image"><!-- /.direct-chat-img -->
+                {% endif %}<!-- /.direct-chat-img -->
+                <div class="direct-chat-text">
+                    {{ message.text|linebreaks }}
+                    {% if message.attachment %}
+                    <a href="{{ message.attachment.url }}" target="_blank"><span class="glyphicon glyphicon-file"></span> {{ message.filename }}</a>
+                    {% endif %}
+                </div>
+                <!-- /.direct-chat-text -->
+            </div>
+            <!-- /.direct-chat-msg -->
+            {% else %}
+            <!-- Message to the right -->
+            <div class="direct-chat-msg right">
+                <div class="direct-chat-info clearfix">
+                    <span class="direct-chat-name pull-right">
+                        {% if message.user.appuser in object.appconversation.business.managers.all %}
+                        {{ object.appconversation.business.name }}
+                        {% else %}
+                        {{ message.user.appuser }}
+                        {% endif %}
+                    </span>
+                    <span class="direct-chat-timestamp pull-left">{{ message.date|date:"SHORT_DATETIME_FORMAT" }}</span>
+                </div>
+                <!-- /.direct-chat-info -->
+                {% if message.user.appuser in object.appconversation.business.managers.all %}
+                <img class="direct-chat-img" src="{{ object.appconversation.business.image.url }}" alt="message user image"><!-- /.direct-chat-img -->
+                {% else %}
+                <img class="direct-chat-img" src="{{ message.user.appuser.image.url }}" alt="message user image"><!-- /.direct-chat-img -->
+                {% endif %}<!-- /.direct-chat-img -->
+                <div class="direct-chat-text">
+                    {{ message.text|linebreaks }}
+                    {% if message.attachment %}
+                    <a href="{% static message.attachment.url %}" target="_blank"><span class="glyphicon glyphicon-file"></span> {{ message.filename }}</a>
+                    {% endif %}
+                </div>
+                <!-- /.direct-chat-text -->
+            </div>
+            <!-- /.direct-chat-msg -->
+            {% endif %}
+            {% endfor %}
+
+        </div>
+        <!--/.direct-chat-messages-->
+
+
+    </div>
+    <!-- /.box-body -->
+    <div class="box-footer">
+        <form method="post" action="." enctype="multipart/form-data">
+            <div class="input-group">
+
+                {% csrf_token %}
+                {{ form.text|add_class:"form-control"|attr:"type:text"|attr:"rows:1"}}
+                <span class="input-group-btn">
+                    <input type="submit" class="btn btn-info btn-flat" value="{% trans 'Send' %}" />
+                </span>
+            </div>
+            {{ form.attachment|add_class:"form-control"|attr:"size:2"}}
+
+        </form>
+    </div>
+</div>
+{% endif %}
+<!-- /.box-footer-->
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "BaseApp/base.html" %}
+{% block content %}
+{% for p in posts %}
+{% include "BusinessApp/NewsFeed/post.html" %}
+{% empty %}
+<p>no posts</p>
+{% endfor %}
+{% endblock %}
+
+
+
+<!--<iframe width="0" height="0" border="0" name="dummyframe" id="dummyframe"></iframe>-->
+
+<!--<form action="submitscript.php" target="dummyframe">-->
+    <!--&lt;!&ndash; form body here &ndash;&gt;-->
+<!--</form>-->

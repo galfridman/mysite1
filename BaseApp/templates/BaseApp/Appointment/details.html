@@ -1,0 +1,102 @@
+{% extends "conversation/conversation_base.html" %}
+{% load i18n conversation_tags %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+{% load app_filters %}
+{% block head_title %}
+{% endblock %}
+
+{% block content %}
+
+<section class="content">
+
+    <div class="box box-default">
+        <div class="box-header with-border">
+            {% if appointment.dispute %}
+            {% else %}
+            <div class="pull-right">
+                <form id="dispute" action="{% url 'my user dispute create' %}" method="GET">
+                    <div class="input-group container-full">
+                        <button type="submit" form="dispute" name="appointment_id" class="btn submit-btn-block btn-danger" value="{{object.id}}">
+                            Start a dispute
+                        </button>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+            <h3 class="box-title">Appointment details</h3>
+        </div>
+        <div class="box-body" style="display: block;">
+            <ul class="list-group list-group-unbordered">
+                <li class="item searchable box-overflow">
+                    <span class="info-box-image"><img src="{{object.service.image.url}}"></span>
+                    <div class="info-box-content">
+                        {% for benefit in user.appuser.user_discount_benefits.all %}
+                        {% if object.service.servicediscount %}
+                        {% if object.service.servicediscount in benefit.discount_benefit.service_discounts.all %}
+                        <span class="info-box-more pull-right pull-top text-red"><del>{{ object.service.price| stringformat:'d' }}</del><i class="fa fa-sheqel"></i></span>
+                        <span class="info-box-more pull-right pull-top text-green">{{ object.service.servicediscount.new_price| stringformat:'d' }}<i class="fa fa-sheqel"></i></span>
+                        {% endif %}
+                        {% else %}
+                        <span class="info-box-more pull-right pull-top">{{ object.service.price }}<i class="fa fa-sheqel"></i></span>
+                        {% endif %}
+                        {% empty %}
+                        <span class="info-box-more pull-right pull-top">{{ object.service.price }}<i class="fa fa-sheqel"></i></span>
+                        {% endfor %}
+                        <span class="info-box-text"><b>Name:</b> {{ object.object.service.name }}</span>
+                        <span class="info-box-more"><b>Description:</b> {{ object.object.service.description }}</span>
+                        <span class="info-box-more"><b>Duration:</b> {{ object.object.service.duration }}</span>
+                        <div>&nbsp;</div>
+                        <span class="info-box-more small pull-bottom pull-right"><b>Changed at:</b> {{ object.service.changed_at|date:"d.m.Y, H:i" }}</span>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <b>Business</b>
+                    <a class="pull-right" href="{% url 'business details' object.business.id %}">
+                        <img src="{{ object.business.image.url }}" class="img-rounded list-image" alt="Image">
+                        {{ object.business }}
+                    </a>
+                </li>
+                <li class="list-group-item">
+                    <b>User</b>
+                    <a class="pull-right" href="{% url 'user details' object.user.id %}">
+                        <img src="{{ object.user.image.url }}" class="img-rounded list-image" alt="Image">
+                        {{ object.user }}
+                    </a>
+                </li>
+                <li class="list-group-item">
+                    <b>Conversation</b> <a href="{% url 'conversation_update' object.appconversation.conversation.id%}" class="pull-right">Go to chat!</a>
+                </li>
+            </ul>
+        </div>
+        <div class="box-footer text-center">
+            {% if object.status = "pending" and request.session.business = object.business %}
+            <div class="input-group container-full">
+                <form action="#" method="GET">
+                    <button type="submit" name="accept" class="btn btn-social btn-success pull-right" value="{{object.id}}">
+                        <i class="fa fa-check"></i>
+                        <b>Accept</b>
+                    </button>
+                    <button type="submit" name="reject" class="btn btn-social btn-danger pull-left" value="{{object.id}}">
+                        <i class="fa fa-times"></i>
+                        <b>Decline</b>
+                    </button>
+                </form>
+            </div>
+            <div>&nbsp;</div>
+            {% endif %}
+            {% if request.session.business.id = object.business.id %}
+            <a href="{% url 'my business appointment list' %}" class="btn btn-primary btn-block btn-warning pull-left">
+                <b>Back to the list</b>
+            </a>
+            {% else %}
+
+            <a href="{% url 'my user appointment list' %}" class="btn btn-primary btn-block btn-warning pull-left">
+
+                <b>Back to the list</b>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

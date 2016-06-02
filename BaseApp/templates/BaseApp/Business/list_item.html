@@ -1,0 +1,11 @@
+<div class="info-box box-overflow">
+    <a href="{{ o.get_absolute_url }}">
+        <span class="info-box-image"><img src="{{o.image.url}}"></span>
+        <div class="info-box-content">
+            <span class="info-box-text"><b>Name:</b> {{ o.name }}</span>
+            <span class="info-box-more"><b>Description:</b> {{ o.description }}</span>
+            <span class="info-box-more"><b>Category:</b> {{ o.category }}</span>
+            <span class="info-box-more"><b>Followers:</b> {{ o.followers.count }}</span>
+        </div>
+    </a>
+</div>

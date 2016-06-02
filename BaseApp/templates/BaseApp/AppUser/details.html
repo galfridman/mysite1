@@ -1,0 +1,87 @@
+{% extends "BaseApp/base.html" %}
+{% block content %}
+{% load staticfiles %}
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="nav-tabs-custom">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#about" data-toggle="tab">About</a></li>
+                    <li><a href="#actions" data-toggle="tab">Actions</a></li>
+                    <li><a href="#log" data-toggle="tab">Log</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="active tab-pane" id="about">
+                        <div class="box-body box-profile">
+                            <img class="profile-user-img img-responsive img-circle" src="{{ var.image.url }}" alt="User profile picture">
+                            <h3 class="profile-username text-center">{{ var }}</h3>
+                            <p class="text-muted text-center">Application User</p>
+
+                            <ul class="list-group list-group-unbordered">
+
+
+                                <li class="list-group-item">
+                                    <b>Gender</b> <a class="pull-right">{{ var.gender }}</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Birthdate</b> <a class="pull-right">{{ var.birthdate }}</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>E-Mail</b> <a class="pull-right">{{ var.user.email }}</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Address</b> <a class="pull-right">{{ var.address }}</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Facebook Profile</b> <a href="{{ socialaccount.extra_data.link }}" class="pull-right">Link</a>
+                                </li>
+
+
+                            </ul>
+                            {% ifequal p_user user %}
+                            <a href="#" class="btn btn-primary btn-block"><b>Edit Profile</b></a>
+                            {% endifequal %}
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="actions">
+                        <form action="" method="POST" > {% csrf_token %}
+                            {% if request.session.business %}
+                            <div class="input-group container-full">
+                                <button type="submit" name="add manager" class="btn submit-btn-block btn-social btn-flat btn-success" value="{{var.id}}">
+                                    <i class="fa fa-user-plus"></i>
+                                    Add to managers
+                                </button>
+                            </div>
+                            <div class="input-group container-full">
+                                <button type="submit" name="invite to follow" class="btn submit-btn-block btn-social btn-flat btn-success" value="{{var.id}}">
+                                    <i class="fa fa-user-plus"></i>
+                                    Invite to follow
+                                </button>
+                            </div>
+                            {% else %}
+                            <div class="input-group container-full">
+                                <button type="submit" name="add friend" class="btn submit-btn-block btn-social btn-flat btn-success" value="{{var.id}}">
+                                    <i class="fa fa-user-plus"></i>
+                                    Add to friends
+                                </button>
+                            </div>
+                            {% endif %}
+                            <div class="input-group container-full">
+                                <button type="submit" name="conversation" class="btn submit-btn-block btn-social btn-flat btn-success" value="{{var.id}}">
+                                    <i class="fa fa-envelope"></i>
+                                    Chat with user
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="tab-pane" id="log">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+{% endblock %}
