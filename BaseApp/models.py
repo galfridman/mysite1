@@ -166,7 +166,7 @@ class Address(models.Model):
 
 
 class AppUser(models.Model):
-    birthdate = models.DateField(null=True, blank=True, default='01/01/2000')
+    birthdate = models.DateField(null=True, blank=True, default='2000-01-01')
     address = models.ForeignKey(Address, null=True, blank=True)
     image = models.ImageField(upload_to=get_image_path, default=os.path.join('img', 'default.png'))
     gender = models.CharField(choices=GENDERS, default='NONE', max_length=50)
