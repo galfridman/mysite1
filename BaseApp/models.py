@@ -126,7 +126,7 @@ class Request(models.Model):
     class Meta:
         ordering = ('created_at', 'type')
         unique_together = (
-        'reciever_content_type', 'reciever_object_id', 'reciever_content_type', 'reciever_object_id', 'type')
+        'reciever_content_type', 'reciever_object_id', 'sender_content_type', 'sender_object_id', 'type')
 
     @cached_property
     def sender(self):
