@@ -28,8 +28,9 @@ def news_feed(request):
         instance.business = request.session['business']
         instance.save()
         followers = models.User.objects.filter(appuser__in=instance.business.followers.all())
-        notify.send(request.user, recipient_list=list(followers), actor=instance.business, verb='published new post.',
-                    target=instance, nf_type='create')
+        if followers:
+            notify.send(request.user, recipient_list=list(followers), actor=instance.business, verb='published new post.',
+                        target=instance, nf_type='create')
 
         return redirect('default')
     if request.GET.get('like'):
