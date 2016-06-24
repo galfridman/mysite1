@@ -283,14 +283,14 @@
 </div>
 {% endblock %}
 {% block base-scripts %}
-<script>
-    function refresh() {
-        $( "#notifications-refresh" ).load( "{% url 'refresh' %} #notifications-refresh" );
-        setTimeout("refresh()", 10000);
-    }
+<!--<script>-->
+    <!--function refresh() {-->
+        <!--$( "#notifications-refresh" ).load( "{% url 'refresh' %} #notifications-refresh" );-->
+        <!--setTimeout("refresh()", 10000);-->
+    <!--}-->
 
-    $(function(){
-        refresh();
-    });
-</script>
+    <!--$(function(){-->
+        <!--refresh();-->
+    <!--});-->
+<!--</script>-->
 {% endblock %}

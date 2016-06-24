@@ -62,5 +62,9 @@ urlpatterns = [
     # Coupons
     url(r'^coupons/', views.coupon_list, name='my user coupon list'),
 
+
+    # Location
+    url(r'^businesses-nearby/', views.businesses_nearby, name='businesses nearby'),
+
 ]
 

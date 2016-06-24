@@ -1,0 +1,13 @@
+<div class="info-box box-overflow">
+    <a href="{{ follower.get_absolute_url }}">
+        <span class="info-box-image"><img src="{{follower.image.url}}"></span>
+        <div class="info-box-content">
+            <span class="info-box-text"><b>Name:</b> {{ follower }}</span>
+            <span class="info-box-more"><b>Address:</b> {{ follower.userlocation.raw }}</span>
+            <span class="info-box-more"><b>Gender:</b> {{ follower.gender }}</span>
+            <span class="info-box-more"><b>Friends:</b> {{ follower.friends.count }}</span>
+            <span class="info-box-more"><b>Distance:</b> {{ distance|floatformat }} KM</span>
+
+        </div>
+    </a>
+</div>

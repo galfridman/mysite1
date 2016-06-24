@@ -1,0 +1,58 @@
+{% extends "BaseApp/base.html" %}
+{% block content %}
+<section class="content">
+    <h3 class="no-margin"><b>Businesses nearby</b>  </h3>
+    <div>&nbsp;</div>
+
+    <div id="map" style="height: 400px;"></div>
+    <div>&nbsp;</div>
+    <h4><i class="fa fa-heart text-red"></i><b> My Favorites</b></h4>
+    <ul class="list-group">
+        {% for business, distance in businesses_dict.items %}
+        {% if user.appuser in business.followers.all %}
+        {% include 'BaseApp/Location/business_item.html' %}
+        {% endif %}
+        {% endfor %}
+    </ul>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+      var map;
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: {{user.appuser.userlocation.latitude}}, lng: {{user.appuser.userlocation.longitude}}},
+          zoom: 13
+        });
+        google.maps.event.addListenerOnce(map, 'tilesloaded', addMarkers);
+      }
+      function addMarkers() {
+      {% for business, distance in businesses_dict.items %}
+        var point = new google.maps.LatLng({{business.address.latitude}},{{business.address.longitude}});
+            var marker = new google.maps.Marker({
+            position: point,
+            map: map,
+            url: '{{business.get_absolute_url}}' ,
+           title: '{{ business.name }}',
+        });
+             marker['infowindow']  = new google.maps.InfoWindow({
+                     content: "<h2><span><img class=\"img-rounded list-image\" src=\"{{business.image.url}}\"> </span><a href=\"{{business.get_absolute_url}}\">{{business.name}}</a></h2> <p>Category: {{ business.category }}</p><p>{{ business.description }}</p> <p>{{ distance|floatformat }} KM away",
+        });
+            google.maps.event.addListener(marker, 'click', function() {
+                //window.location.href = this.url;
+                 this['infowindow'].open(map, this);
+            });
+           google.maps.event.addListener(marker, 'mouseover', function() {
+                // this['infowindow'].open(map, this);
+                    });
+           google.maps.event.addListener(marker, 'mouseout', function() {
+                // this['infowindow'].close(map, this);
+
+            });
+        {% endfor %}
+  }
+    </script>
+
+<script src="https://maps.googleapis.com/maps/api/js?&callback=initMap"></script>
+{% endblock %}

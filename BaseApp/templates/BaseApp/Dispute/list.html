@@ -24,15 +24,15 @@
         <tbody>
         {% for o in objects_list %}
         {% if request.session.businesss = o.business %}
-        <tr data-href="{% url 'my user dispute details' o.id %}">
+        <tr data-href="{% url 'my business dispute details' o.id %}">
             <td>
                 <a href="{% url 'user details' o.user.id %}">
                 <img src="{{ o.user.image.url }}" class="img-rounded list-image" alt="Image">
                 {{ o.user }}
-                    </a>
+                </a>
             </td>
             {% else %}
-        <tr data-href="{% url 'my business dispute details' o.id %}">
+        <tr data-href="{% url 'my user dispute details' o.id %}">
             <td>
                 <a href="{% url 'business details' o.business.id %}">
                     <img src="{{ o.business.image.url }}" class="img-rounded list-image" alt="Image">

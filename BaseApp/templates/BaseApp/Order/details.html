@@ -122,11 +122,11 @@
                         {% for benefit in user.appuser.user_discount_benefits.all %}
                         {% if order_item.item.itemdiscount %}
                         {% if order_item.item.itemdiscount in benefit.discount_benefit.item_discounts.all and benefit.discount_benefit.benefit.is_available %}
-                        <span class="info-box-more pull-right pull-top text-red"><del>{{ order_item.item.price| stringformat:'d' }}</del><i class="fa fa-sheqel"></i></span>
-                        <span class="info-box-more pull-right pull-top text-green">{{ order_item.item.itemdiscount.new_price| stringformat:'d' }}<i class="fa fa-sheqel"></i></span>
+                        <span class="info-box-more pull-right pull-top text-red"><del>{{ order_item.item.price| floatformat }}</del><i class="fa fa-sheqel"></i></span>
+                        <span class="info-box-more pull-right pull-top text-green">{{ order_item.item.itemdiscount.new_price| floatformat }}<i class="fa fa-sheqel"></i></span>
+                        {% elif order_item.item.itemdiscount in benefit.discount_benefit.item_discounts.all and not benefit.discount_benefit.benefit.is_available %}
+                        <span class="info-box-more pull-right pull-top">{{ order_item.item.price|floatformat }}<i class="fa fa-sheqel"></i></span>
                         {% endif %}
-                        {% else %}
-                        <span class="info-box-more pull-right pull-top">{{ order_item.item.price }}<i class="fa fa-sheqel"></i></span>
                         {% endif %}
                         {% empty %}
                         <span class="info-box-more pull-right pull-top">{{ order_item.item.price }}<i class="fa fa-sheqel"></i></span>
@@ -143,18 +143,18 @@
                     <div class="container-full box-overflow">
                         <b>Used coupons</b>
                         {% for coupon in object.money_coupons.all %}
-                        <div><a href="#" class="pull-right">
+                        <div><p><a href="#">
                             Get {{coupon.money_reward }}<i class="fa fa-sheqel"> dicount</i> .
-                        </a></div>
+                        </a></p></div>
                         {% endfor %}
                         {% for coupon in object.item_coupons.all %}
                         <div>
-                            <a href="#" class="pull-right">
+                            <a href="#">
                                 Get free item: {{coupon.item }}.
                             </a>
                         </div>
                         {% endfor %}
-                        </div>
+                    </div>
                 </li>
             </ul>
         </div>

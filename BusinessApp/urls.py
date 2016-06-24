@@ -92,6 +92,10 @@ urlpatterns = [
 
 
     # statistics
-        url(r'^statistics/', views.statistics_charts, name='my business statistics list'),
+    url(r'^statistics/', views.statistics_charts, name='my business statistics list'),
+
+    # Location
+    url(r'^followers-nearby/', views.followers_nearby, name='followers nearby'),
+
 
 ]

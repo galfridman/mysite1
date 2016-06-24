@@ -6,7 +6,7 @@
 <section class="content">
     <div class="box box-solid">
         <div class="box-header with-border ">
-            <h3>Create Business</h3>
+            <h3>Create order</h3>
 
         </div>
         <div class="box-body">
@@ -25,11 +25,11 @@
                                 {% for benefit in user.appuser.user_discount_benefits.all %}
                                 {% if item.itemdiscount %}
                                 {% if item.itemdiscount in benefit.discount_benefit.item_discounts.all and benefit.discount_benefit.benefit.is_available %}
-                                <span class="info-box-more pull-right pull-top text-red"><del>{{ item.price| stringformat:'d' }}</del><i class="fa fa-sheqel"></i></span>
-                                <span class="info-box-more pull-right pull-top text-green">{{ item.itemdiscount.new_price| stringformat:'d' }}<i class="fa fa-sheqel"></i></span>
+                                <span class="info-box-more pull-right pull-top text-red"><del>{{ item.price| floatformat }}</del><i class="fa fa-sheqel"></i></span>
+                                <span class="info-box-more pull-right pull-top text-green">{{ item.itemdiscount.new_price| floatformat }}<i class="fa fa-sheqel"></i></span>
+                                {% elif item.itemdiscount in benefit.discount_benefit.item_discounts.all and not benefit.discount_benefit.benefit.is_available %}
+                                <span class="info-box-more pull-right pull-top">{{ item.price|floatformat }}<i class="fa fa-sheqel"></i></span>
                                 {% endif %}
-                                {% else %}
-                                <span class="info-box-more pull-right pull-top">{{ item.price }}<i class="fa fa-sheqel"></i></span>
                                 {% endif %}
                                 {% empty %}
                                 <span class="info-box-more pull-right pull-top">{{ item.price }}<i class="fa fa-sheqel"></i></span>

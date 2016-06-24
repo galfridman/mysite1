@@ -38,7 +38,7 @@ class ProfileAdapter(DefaultSocialAccountAdapter):
         print(url)
         appuser.gender = data['gender']
         try:
-            appuser.image.delete()
+            # appuser.image.delete()
             appuser.image.save('avatar.jpg',
                                ContentFile(avatar.read()))
         except:

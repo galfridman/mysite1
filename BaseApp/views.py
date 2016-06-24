@@ -56,3 +56,26 @@ def search(request):
         'users_list': users_list,
     }
     return render(request, 'BaseApp/search.html', context)
+
+
+from django.views.decorators.csrf import csrf_exempt
+
+
+@csrf_exempt
+def maps(request):
+    if request.POST:
+        user_location = m.UserLocation()
+        print(request.POST.get('lat') + request.POST.get('long') + request.POST.get('raw'))
+        user_location.latitude = float(request.POST.get('lat'))
+        user_location.longitude = float(request.POST.get('long'))
+        user_location.raw = request.POST.get('raw')
+        if request.user.appuser.userlocation:
+            request.user.appuser.userlocation.delete()
+            user_location.user = request.user.appuser
+        else:
+            user_location.user = request.user.appuser
+        user_location.save()
+    context = {
+
+    }
+    return render(request, 'BaseApp/Location/maps.html', context)

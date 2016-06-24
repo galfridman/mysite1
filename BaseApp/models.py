@@ -102,6 +102,21 @@ REQUEST_TYPES = [
     ('follow-benefit', 'follow-benefit'),
 ]
 
+from math import sin, cos, sqrt, atan2, radians
+
+def calc_distance(lat1, long1, lat2, long2):
+    R = 6373.0
+    lat1 = radians(lat1)
+    lon1 = radians(long1)
+    lat2 = radians(lat2)
+    lon2 = radians(long2)
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))
+    distance = R * c
+    return distance
+
 
 class Request(models.Model):
     sender_content_type = models.ForeignKey(ContentType, null=True, blank=True, related_name='sent_requests',
@@ -153,6 +168,8 @@ class Address(models.Model):
     state = models.TextField()
     zip_code = models.TextField()
     country = models.TextField()
+    latitude = models.FloatField(default=0)
+    longitude = models.FloatField(default=0)
 
     def __unicode__(self):
         return u"%s" % self.raw
@@ -205,6 +222,17 @@ class AppUser(models.Model):
 
     def age(self):
         return datetime.now().year - self.birthdate.year
+
+    def businesses_nearby(self):
+        businesses = Business.objects.all()
+        my_dict = {}
+        for business in businesses:
+            distance = calc_distance(business.address.latitude, business.address.longitude, self.userlocation.latitude,
+                                     self.userlocation.longitude)
+            # if distance < 10:
+            my_dict.update({business: distance})
+        return my_dict
+
 
     def get_absolute_url(self):
         return "/user/%i/details" % self.id
@@ -270,6 +298,16 @@ class Business(models.Model):
             'this_year': this_year_dict,
             'previous_year': previous_year_dict,
         }
+        return my_dict
+
+    def followers_nearby(self):
+        followers = self.followers.all()
+        my_dict = {}
+        for follower in followers:
+            distance = calc_distance(self.address.latitude, self.address.longitude, follower.userlocation.latitude,
+                                     follower.userlocation.longitude)
+            # if distance < 10:
+            my_dict.update({follower: distance})
         return my_dict
 
 
@@ -694,3 +732,12 @@ class UserDiscountBenefit(models.Model):
 
     class Meta:
         unique_together = ('discount_benefit', 'user')
+
+
+class UserLocation(models.Model):
+    latitude = models.FloatField(default=0)
+    longitude = models.FloatField(default=0)
+    raw = models.CharField(default="", max_length=100)
+    user = models.OneToOneField(AppUser)
+    timestamp = models.DateTimeField(default=pytz.UTC.localize(datetime.now()))
+

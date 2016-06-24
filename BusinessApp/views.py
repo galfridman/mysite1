@@ -255,6 +255,7 @@ def business_update(request, business_id):
     instance = get_object_or_404(models.Business, pk=business_id)
     form = forms.BusinessForm(request.POST or None, request.FILES or None, instance=instance)
     address_form = forms.AddressForm(request.POST or None)
+    print("@@@@@@@@@@@@@@@@@@@",request.POST, "@@@@@@@@@@@@@@@@@@@@@@@@")
     if form.is_valid() and address_form.is_valid():
         instance = form.save(commit=False)
         instance.save()
@@ -311,8 +312,9 @@ def catalog_create(request, business_id):
         instance.business = business
         instance.save()
         followers = models.User.objects.filter(appuser__in=business.followers.all())
-        notify.send(request.user, recipient_list=list(followers), actor=business, verb='created a new catalog.',
-                    target=instance, nf_type='create')
+        if followers:
+            notify.send(request.user, recipient_list=list(followers), actor=business, verb='created a new catalog.',
+                        target=instance, nf_type='create')
         return redirect('catalog list', business_id)
     context = {
         'business_id': int(business_id),
@@ -380,7 +382,8 @@ def item_create(request, business_id, catalog_id):
         instance.catalog = catalog
         instance.save()
         followers = models.User.objects.filter(appuser__in=catalog.business.followers.all())
-        notify.send(request.user, recipient_list=list(followers), actor=catalog.business, verb='created a new item.',
+        if followers:
+            notify.send(request.user, recipient_list=list(followers), actor=catalog.business, verb='created a new item.',
                     target=instance, nf_type='create')
         return redirect('item list', business_id, catalog_id)
     context = {
@@ -451,7 +454,8 @@ def service_create(request, business_id, catalog_id):
         instance.catalog = catalog
         instance.save()
         followers = models.User.objects.filter(appuser__in=catalog.business.followers.all())
-        notify.send(request.user, recipient_list=list(followers), actor=catalog.business, verb='created a new service.',
+        if followers:
+            notify.send(request.user, recipient_list=list(followers), actor=catalog.business, verb='created a new service.',
                     target=instance, nf_type='create')
         return redirect('service list', business_id, catalog_id)
     context = {
@@ -629,7 +633,8 @@ def friend_benefit_create(request):
             instance.money_reward = money_reward
         instance.save()
         followers = models.User.objects.filter(appuser__in=base_benefit.business.followers.all())
-        notify.send(request.user, recipient_list=list(followers), actor=base_benefit.business,
+        if followers:
+            notify.send(request.user, recipient_list=list(followers), actor=base_benefit.business,
                     verb='created a new friend benefit.', target=instance, nf_type='create')
         return redirect('default')
     context = {
@@ -668,9 +673,9 @@ def ticket_benefit_create(request):
         base_benefit.business = request.session['business']
         base_benefit.save()
         instance.benefit = base_benefit
+        instance.required_punches -= 1
         instance.save()
         if instance.reward_type == 'item_reward':
-            print()
             selected = request.POST.get('item_checks')
             for item in items:
                 if str(item.id) == selected:
@@ -685,8 +690,9 @@ def ticket_benefit_create(request):
             instance.money_reward = money_reward
         instance.save()
         followers = models.User.objects.filter(appuser__in=base_benefit.business.followers.all())
-        notify.send(request.user, recipient_list=list(followers), actor=base_benefit.business,
-                    verb='created a new ticket benefit.', target=instance, nf_type='create')
+        if followers:
+            notify.send(request.user, recipient_list=list(followers), actor=base_benefit.business,
+                        verb='created a new ticket benefit.', target=instance, nf_type='create')
         return redirect('default')
     context = {
         'form': form,
@@ -748,11 +754,12 @@ def discount_benefit_create(request):
                     instance.service_discounts.add(service_discount)
         else:
             purchase_amount = request.POST.get('purchase_amount')
-            instance.purchase_amount_discount = float(purchase_amount) * (1 - (instance.discount_percentage / 100))
+            instance.purchase_amount_discount = float(purchase_amount)
         instance.save()
         followers = models.User.objects.filter(appuser__in=base_benefit.business.followers.all())
-        notify.send(request.user, recipient_list=list(followers), actor=base_benefit.business,
-                    verb='created a new discount benefit.', target=instance, nf_type='create')
+        if followers:
+            notify.send(request.user, recipient_list=list(followers), actor=base_benefit.business,
+                        verb='created a new discount benefit.', target=instance, nf_type='create')
         return redirect('default')
     context = {
         'form': form,
@@ -798,3 +805,15 @@ def statistics_charts(request):
 
     }
     return render(request, 'BaseApp/charts/charts.html', context)
+
+
+def followers_nearby(request):
+    followers_dict = request.session['business'].followers_nearby()
+
+    context = {
+        'followers_dict': followers_dict,
+    }
+    return render(request, 'BaseApp/Location/followers_nearby.html', context)
+
+
+

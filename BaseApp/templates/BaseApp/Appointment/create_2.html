@@ -18,14 +18,18 @@
                         {{ value.0|date:'H:i' }} - {{ value.2|date:'H:i' }}
                     </td>
                     <td colspan="1" class="input-group container-full">
-                        {% if value.1 %}
+                        {% if value.1 = 1 %}
                         <form method="GET" id="{{key}}">
                             <input hidden value="{{value.0|date:'d/m/Y H:i'}}" name="date_time" >
                             <button form="{{key}}" type="submit" name="submit" value="ok" class="btn btn-circle btn-success pull-right">
                                 <i class="fa fa-clock-o"></i>
                             </button>
                         </form>
-                        {%else%}
+                        {% elif value.1 = 2 %}
+                            <div class="btn btn-circle btn-warning pull-right">
+                            <i class="fa fa-clock-o"></i>
+                        </div>
+                        {% else %}
                         <div class="btn btn-circle btn-danger pull-right">
                             <i class="fa fa-clock-o"></i>
                         </div>

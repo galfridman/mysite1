@@ -120,6 +120,12 @@ class ItemForm(forms.ModelForm):
                 'placeholder': field,
                 'required': True,
             })
+        self.fields['price'].widget.attrs.update({
+                'class': 'form-control',
+                'rows': '1',
+                'placeholder': 'Price',
+                'required': False,
+        })
 
     class Meta:
         model = m.Item
@@ -186,6 +192,15 @@ class AddressForm(forms.ModelForm):
         self.fields['city'].widget.attrs.update({
             'id': 'locality'
         })
+        self.fields['latitude'].label = ""
+        self.fields['latitude'].widget.attrs.update({
+            'id': 'lat',
+        })
+        self.fields['longitude'].label = ""
+        self.fields['longitude'].widget.attrs.update({
+            'id': 'long',
+        })
+
 
     class Meta:
         model = m.Address
@@ -196,8 +211,12 @@ class AddressForm(forms.ModelForm):
             'state',
             'zip_code',
             'country',
+            'latitude',
+            'longitude',
         ]
         widgets = {
+            'latitude': forms.HiddenInput(),
+            'longitude': forms.HiddenInput()
         }
 
 
@@ -309,6 +328,7 @@ class TicketBenefitForm(forms.ModelForm):
                 'required': True,
                 'id': field,
             })
+
 
     class Meta:
         model = m.TicketBenefit

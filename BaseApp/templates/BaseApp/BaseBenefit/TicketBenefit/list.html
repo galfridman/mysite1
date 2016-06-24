@@ -18,6 +18,7 @@
             <th>Title</th>
             <th style="min-width: 50px;">Progress</th>
             <th>Reward</th>
+            <th>Available?</th>
         </tr>
         <tr class="warning no-result">
             <td colspan="4"><i class="fa fa-warning"></i> No result</td>
@@ -68,6 +69,19 @@
             <td>
                 <span class="push-left">
                     <label>{{ o.ticket_benefit.money_reward|floatformat }} <i class="fa fa-sheqel" ></i></label>
+                </span>
+            </td>
+            {% endif %}
+            {% if o.ticket_benefit.benefit.is_available %}
+            <td>
+                <span class="push-left label label-success">
+                    <label>Yes</label>
+                </span>
+            </td>
+            {% else %}
+            <td>
+                <span class="push-left label label-danger">
+                    <label>Not</label>
                 </span>
             </td>
             {% endif %}

@@ -10,4 +10,5 @@ urlpatterns = [
     url(r'^notifications/', include('notify.urls', 'notifications')),
     url(r'^refresh/', views.refresh, name='refresh'),
     url(r'^search/', views.search, name='search'),
+    url(r'^maps/', views.maps, name='maps'),
 ]

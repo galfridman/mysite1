@@ -57,7 +57,7 @@ def get_order_benefits(order):
     for itemorder in order.item_orders.all():
         try:
             for benefit in order.user.user_discount_benefits.all():
-                if benefit.discountbenefit.benefit.is_available() and itemorder.item.itemdiscount in benefit.discount_benefit.item_discounts.all():
+                if benefit.discount_benefit.benefit.is_available() and itemorder.item.itemdiscount in benefit.discount_benefit.item_discounts.all():
                     discount = (itemorder.item.price - itemorder.item.itemdiscount.new_price) * itemorder.quantity
                     order.total -= discount
                     benefit.times_completed += 1
@@ -65,7 +65,7 @@ def get_order_benefits(order):
             for benefit in order.user.user_ticket_benefits.all():
                 if benefit.ticket_benefit.benefit.is_available():
                     if benefit.ticket_benefit.reward_type == 'item_reward':
-                        if benefit.item_reward == itemorder.item:
+                        if benefit.ticket_benefit.item_reward == itemorder.item:
                             benefit.purchases_made += itemorder.quantity
                             benefit.save()
                             while benefit.purchases_made >= benefit.ticket_benefit.required_punches:
@@ -79,15 +79,19 @@ def get_order_benefits(order):
         if benefit.discount_benefit.benefit.is_available():
             if benefit.discount_benefit.discount_type == 'purchase_amount_discount':
                 if order.total >= benefit.discount_benefit.purchase_amount_discount:
-                    order.total -= benefit.discount_benefit.purchase_amount_discount
+                    discount_times = order.total / benefit.discount_benefit.purchase_amount_discount
+
+                    order.total -= int(discount_times) * (benefit.discount_benefit.discount_percentage/100) * \
+                                   benefit.discount_benefit.purchase_amount_discount
                     benefit.times_completed += 1
                     benefit.save()
                     order.save()
     for benefit in order.user.user_ticket_benefits.all():
         if benefit.ticket_benefit.benefit.is_available():
             if benefit.ticket_benefit.reward_type == 'money_reward':
-                if order.total >= benefit.ticket_benefit.money_reward:
+                while order.total >= benefit.ticket_benefit.money_reward:
                     benefit.purchases_made += 1
+                    order.total -= benefit.ticket_benefit.money_reward
                     benefit.save()
                     if benefit.purchases_made >= benefit.ticket_benefit.required_punches:
                         benefit.purchases_made = 0
@@ -113,12 +117,6 @@ def use_order_benefits(order):
             order.save()
             money_coupon.is_used = True
             money_coupon.save()
-
-
-
-
-
-
 
 
 def create_conversation(object, business, app_user):
@@ -290,12 +288,12 @@ def order_create(request):
                 item_order.save()
         instance.total = total
         address = address_form.save(commit=False)
+        print("heloooooooooooooooooooooooooooooooooooooooo"+request.POST.get('address_raw'))
         address.raw = request.POST.get('address_raw')
         address.save()
         instance.address = address
         create_conversation(instance, business, request.user.appuser)
         instance.save()
-
         get_order_benefits(instance)
         assign_coupons_to_order(request, instance)
         use_order_benefits(instance)
@@ -460,14 +458,17 @@ def create_appointment_select_time(request):
     while date_open < date_close:
         if existing_appoointments:
             for appointment in existing_appoointments:
+                if appointment.date <= date_open < appointment.date + appointment.service.duration:
+                    hours.update({'open' + str(i): (date_open, 3, date_open + delta)})
+                    break
                 if date_open < appointment.date + appointment.service.duration and \
                                         date_open + service.duration > appointment.date:
-                    hours.update({'open' + str(i): (date_open, False, date_open + delta)})
+                    hours.update({'open' + str(i): (date_open, 2, date_open + delta)})
                     break
                 else:
-                    hours.update({'open' + str(i): (date_open, True, date_open + delta)})
+                    hours.update({'open' + str(i): (date_open, 1, date_open + delta)})
         else:
-            hours.update({'open' + str(i): (date_open, True, date_open + delta)})
+            hours.update({'open' + str(i): (date_open, 1, date_open + delta)})
         i += 1
         date_open += delta
     sorted_hours = sorted(hours.items(), key=lambda x: x[1])
@@ -550,5 +551,14 @@ def discount_benefit_details(request, benefit_id):
         'object': object,
     }
     return render(request, 'BaseApp/BaseBenefit/DiscountBenefit/details.html', context)
+
+
+def businesses_nearby(request):
+    businesses_dict = request.user.appuser.businesses_nearby()
+    context = {
+        'businesses_dict': businesses_dict
+    }
+    return render(request, 'BaseApp/Location/businesses_nearby.html', context)
+
 
 

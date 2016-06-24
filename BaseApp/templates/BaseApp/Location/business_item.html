@@ -1,0 +1,12 @@
+<div class="info-box box-overflow">
+    <a href="{{ business.get_absolute_url }}">
+        <span class="info-box-image small"><img src="{{business.image.url}}"></span>
+        <div class="info-box-content">
+            <span class="info-box-text"><b>Name:</b> {{ business.name }}</span>
+            <span class="info-box-more"><b>Description:</b> {{ business.description }}</span>
+            <span class="info-box-more"><b>Address:</b> {{ business.address.raw }}</span>
+            <span class="info-box-more"><b>Followers:</b> {{ business.followers.count }}</span>
+            <span class="info-box-more"><b>Distance:</b> {{ distance|floatformat }} KM</span>
+        </div>
+    </a>
+</div>
