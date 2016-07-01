@@ -29,32 +29,26 @@
                             <li class="header">You have {{ user.unread_conversations.count }} unread conversations</li>
                             <li>
                                 <ul class="menu">
-                                    {% for c in user.conversations.all %}
-                                    {% if c.appconversation.is_regular %}
-                                    <li>
-                                        <a href="{% url 'conversation_update' c.id%}">
+                                    {% for c in request.session.business.appconversation_set.all %}
+                                    <li><!-- start message -->
+                                        <a href="{% url 'conversation_update' c.conversation.id%}">
                                             <div class="pull-left">
-                                                <img src="{{ c.appconversation.appuser.image.url }}" class="img-circle" alt="User Image">
+                                                <img src="{{ c.user.image.url }}" class="img-circle" alt="User Image">
                                             </div>
                                             <h4>
-                                                <small><i class="fa fa-clock-o"></i> {{ c.get_last_message.date|timesince|upto:',' }} ago</small>
-                                                {% if c.user.appuser not in c.appconversation.business.managers.all %}
-                                                {{ c.appconversation.business.name }}
-                                                {% else %}
-                                                {{ c.appconversation.appuser }}
-                                                {% endif %}
+                                                <small><i class="fa fa-clock-o"></i> {{ c.conversation.get_last_message.date|timesince|upto:',' }} ago</small>
+                                                {{ c.user.name }}
                                             </h4>
                                             <p>
-                                                {% if c.get_last_message.user.appuser in c.appconversation.business.managers.all %}
-                                                {{ c.appconversation.business.name }}
+                                                {% if c.conversation.get_last_message.user.appuser in c.business.managers.all %}
+                                                {{ c.business.name }}
                                                 {% else %}
-                                                {{ c.appconversation.appuser }}
+                                                {{ c.appuser }}
                                                 {% endif %}
-                                                : {{c.get_last_message.text}}
+                                                : {{c.conversation.get_last_message.text}}
                                             </p>
                                         </a>
-                                    </li>
-                                    {% endif %}
+                                    </li><!-- end message -->
                                     {% endfor %}
                                 </ul>
                             </li>
@@ -137,6 +131,11 @@
                         <li><a href="{% url 'my business discount benefit list' %}"><i class="fa fa-shekel"></i>Discount Benefits</a></li>
                         <li><a href="{% url 'my business ticket benefit list' %}"><i class="fa fa-ticket"></i>Ticket Benefits</a></li>
                     </ul>
+                </li>
+                <li class="">
+                    <a href="{% url 'my business dispute list' %}">
+                        <i class="fa fa-wrench"></i> <span>Disputes</span>
+                    </a>
                 </li>
                 <li class="">
                     <a href="{% url 'my business conversation list' %}">

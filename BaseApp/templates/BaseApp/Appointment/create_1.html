@@ -23,18 +23,22 @@
                         <li class="item searchable box-overflow">
                             <span class="info-box-image"><img src="{{service.image.url}}"></span>
                             <div class="info-box-content">
+                                {% if service.servicediscount %}
+
                                 {% for benefit in user.appuser.user_discount_benefits.all %}
-                                {% if object.servicediscount %}
-                                {% if object.servicediscount in benefit.discount_benefit.service_discounts.all and benefit.discount_benefit.benefit.is_available %}
-                                <span class="info-box-more pull-right pull-top text-red"><del>{{ object.price| stringformat:'d' }}</del><i class="fa fa-sheqel"></i></span>
-                                <span class="info-box-more pull-right pull-top text-green">{{ object.servicediscount.new_price| stringformat:'d' }}<i class="fa fa-sheqel"></i></span>
-                                {% endif %}
-                                {% else %}
-                                <span class="info-box-more pull-right pull-top">{{ object.price }}<i class="fa fa-sheqel"></i></span>
+                                {% if service.servicediscount in benefit.discount_benefit.service_discounts.all and benefit.discount_benefit.benefit.is_available %}
+                                <span class="info-box-more pull-right pull-top text-red"><del>{{ service.price|floatformat }}</del><i class="fa fa-sheqel"></i></span>
+                                <span class="info-box-more pull-right pull-top text-green">{{ service.servicediscount.new_price| floatformat }}<i class="fa fa-sheqel"></i></span>
+                                {% elif service.servicediscount in benefit.discount_benefit.service_discounts.all and not benefit.discount_benefit.benefit.is_available %}
+                                <span class="info-box-more pull-right pull-top">{{ service.price|floatformat }}<i class="fa fa-sheqel"></i></span>
                                 {% endif %}
                                 {% empty %}
-                                <span class="info-box-more pull-right pull-top">{{ object.price }}<i class="fa fa-sheqel"></i></span>
+                                <span class="info-box-more pull-right pull-top">{{ service.price|floatformat }}<i class="fa fa-sheqel"></i></span>
                                 {% endfor %}
+                                {% else %}
+                                <span class="info-box-more pull-right pull-top">{{ service.price|floatformat }}<i class="fa fa-sheqel"></i></span>
+                                {% endif %}
+
                                 <span class="info-box-text"><b>Name:</b> {{ service.name }}</span>
                                 <span class="info-box-more"><b>Description:</b> {{ service.description }}</span>
                                 <div class="pull-right"><input type="radio" name='service_id' value="{{ service.id }}"/></div>

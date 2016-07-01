@@ -126,7 +126,7 @@ display:inline-block
 }
 
 .box-small-overflow{
-  max-height:50px;
+  max-height:70px;
   overflow: auto;
   display:block;
   width:100%;

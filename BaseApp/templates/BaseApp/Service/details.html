@@ -34,18 +34,20 @@
                 </li>
                 <li class="list-group-item">
                     <b>Price</b>
-                    {% for benefit in user.appuser.user_discount_benefits.all %}
                     {% if object.servicediscount %}
+
+                    {% for benefit in user.appuser.user_discount_benefits.all %}
                     {% if object.servicediscount in benefit.discount_benefit.service_discounts.all and benefit.discount_benefit.benefit.is_available %}
-                    <span class="info-box-more pull-right pull-top text-red"><del>{{ object.price| stringformat:'d' }}</del><i class="fa fa-sheqel"></i></span>
-                    <span class="info-box-more pull-right pull-top text-green">{{ object.servicediscount.new_price| stringformat:'d' }}<i class="fa fa-sheqel"></i></span>
-                    {% endif %}
-                    {% else %}
-                    <span class="info-box-more pull-right pull-top">{{ object.price }}<i class="fa fa-sheqel"></i></span>
+                    <span class="info-box-more pull-right pull-top text-red"><del>{{ object.price|floatformat }}</del><i class="fa fa-sheqel"></i></span>
+                    <span class="info-box-more pull-right pull-top text-green">{{ object.servicediscount.new_price| floatformat }}<i class="fa fa-sheqel"></i></span>
+                    
                     {% endif %}
                     {% empty %}
-                    <span class="info-box-more pull-right pull-top">{{ object.price }}<i class="fa fa-sheqel"></i></span>
+                    <span class="info-box-more pull-right pull-top">{{ object.price|floatformat }}<i class="fa fa-sheqel"></i></span>
                     {% endfor %}
+                    {% else %}
+                    <span class="info-box-more pull-right pull-top">{{ <object data="" type=""></object>.price|floatformat }}<i class="fa fa-sheqel"></i></span>
+                    {% endif %}
                 </li>
                 <li class="list-group-item">
                     <b>Created at</b>

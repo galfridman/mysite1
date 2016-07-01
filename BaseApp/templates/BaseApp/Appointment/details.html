@@ -31,21 +31,21 @@
                 <li class="item searchable box-overflow">
                     <span class="info-box-image"><img src="{{object.service.image.url}}"></span>
                     <div class="info-box-content">
-                        {% for benefit in user.appuser.user_discount_benefits.all %}
                         {% if object.service.servicediscount %}
-                        {% if object.service.servicediscount in benefit.discount_benefit.service_discounts.all %}
-                        <span class="info-box-more pull-right pull-top text-red"><del>{{ object.service.price| stringformat:'d' }}</del><i class="fa fa-sheqel"></i></span>
-                        <span class="info-box-more pull-right pull-top text-green">{{ object.service.servicediscount.new_price| stringformat:'d' }}<i class="fa fa-sheqel"></i></span>
-                        {% endif %}
-                        {% else %}
-                        <span class="info-box-more pull-right pull-top">{{ object.service.price }}<i class="fa fa-sheqel"></i></span>
+                        {% for benefit in user.appuser.user_discount_benefits.all %}
+                        {% if object.service.servicediscount in benefit.discount_benefit.service_discounts.all and benefit.discount_benefit.benefit.is_available %}
+                        <span class="info-box-more pull-right pull-top text-red"><del>{{ object.service.price|floatformat }}</del><i class="fa fa-sheqel"></i></span>
+                        <span class="info-box-more pull-right pull-top text-green">{{ object.service.servicediscount.new_price| floatformat }}<i class="fa fa-sheqel"></i></span>
                         {% endif %}
                         {% empty %}
-                        <span class="info-box-more pull-right pull-top">{{ object.service.price }}<i class="fa fa-sheqel"></i></span>
+                        <span class="info-box-more pull-right pull-top">{{ object.service.price|floatformat }}<i class="fa fa-sheqel"></i></span>
                         {% endfor %}
-                        <span class="info-box-text"><b>Name:</b> {{ object.object.service.name }}</span>
-                        <span class="info-box-more"><b>Description:</b> {{ object.object.service.description }}</span>
-                        <span class="info-box-more"><b>Duration:</b> {{ object.object.service.duration }}</span>
+                        {% else %}
+                        <span class="info-box-more pull-right pull-top">{{ object.service.price|floatformat }}<i class="fa fa-sheqel"></i></span>
+                        {% endif %}
+                        <span class="info-box-text"><b>Name:</b> {{ object.service.name }}</span>
+                        <span class="info-box-more"><b>Description:</b> {{ object.service.description }}</span>
+                        <span class="info-box-more"><b>Duration:</b> {{ object.service.duration }}</span>
                         <div>&nbsp;</div>
                         <span class="info-box-more small pull-bottom pull-right"><b>Changed at:</b> {{ object.service.changed_at|date:"d.m.Y, H:i" }}</span>
                     </div>

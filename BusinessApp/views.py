@@ -29,7 +29,8 @@ def news_feed(request):
         instance.save()
         followers = models.User.objects.filter(appuser__in=instance.business.followers.all())
         if followers:
-            notify.send(request.user, recipient_list=list(followers), actor=instance.business, verb='published new post.',
+            notify.send(request.user, recipient_list=list(followers), actor=instance.business,
+                        verb='published new post.',
                         target=instance, nf_type='create')
 
         return redirect('default')
@@ -45,6 +46,7 @@ def news_feed(request):
     }
     return render(request, 'BaseApp/NewsFeed/news_feed.html', context)
 
+
 # Coupon
 def coupon_list(request):
     item_coupon_list = models.ItemCoupon.objects.filter(business=request.session['business'])
@@ -58,6 +60,7 @@ def coupon_list(request):
         'unused_money_coupons_count': unused_money_coupons_count,
     }
     return render(request, 'BaseApp/Coupon/list.html', context)
+
 
 # Conversation
 def my_conversation_list(request):
@@ -78,7 +81,7 @@ def notification_list(request):
 
 # Request
 def handle_request_accepted(request):
-    request_object = models.Request(pk = request.POST.get('accepted'))
+    request_object = models.Request(pk=request.POST.get('accepted'))
     if request_object.type == 'friend':
         """
         type=friend, reciever=user, sender=user
@@ -108,9 +111,8 @@ def handle_request_accepted(request):
 
 
 def handle_request_rejected(request):
-    request_object = models.Request(pk = request.POST.get('rejected'))
-    request_object.status='rejected'
-
+    request_object = models.Request(pk=request.POST.get('rejected'))
+    request_object.status = 'rejected'
 
 
 def request_list(request):
@@ -119,9 +121,11 @@ def request_list(request):
     elif request.POST.get('reject'):
         handle_request_rejected(request)
     recieved_requests = models.Request.objects.filter(reciever_object_id=request.session['business'].id,
-                                                      reciever_content_type=models.ContentType.objects.get_for_model(models.Business))
+                                                      reciever_content_type=models.ContentType.objects.get_for_model(
+                                                          models.Business))
     sent_requests = models.Request.objects.filter(sender_object_id=request.session['business'].id,
-                                                  sender_content_type=models.ContentType.objects.get_for_model(models.Business))
+                                                  sender_content_type=models.ContentType.objects.get_for_model(
+                                                      models.Business))
     sent_pending_count = sent_requests.filter(status='pending').count
     recieved_pending_count = recieved_requests.filter(status='pending').count
     context = {
@@ -131,8 +135,6 @@ def request_list(request):
         'sent_requests': sent_requests,
     }
     return render(request, 'BaseApp/Request/list.html', context)
-
-
 
 
 # Dispute
@@ -162,8 +164,6 @@ def dispute_details(request, dispute_id):
     return render(request, 'BaseApp/Dispute/details.html', context)
 
 
-
-
 def business_details(request, business_id):
     object = get_object_or_404(models.Business, pk=business_id)
     if request.GET.get('follow'):
@@ -172,7 +172,8 @@ def business_details(request, business_id):
         unfollow_business(request, request.GET.get('unfollow'))
     if request.POST.get('manager'):
         new_manager = models.AppUser.objects.get(pk=request.POST.get('manager'))
-        request_object = models.Request(reciever_content_object=new_manager, sender_content_object=request.session['business'], type='manage')
+        request_object = models.Request(reciever_content_object=new_manager,
+                                        sender_content_object=request.session['business'], type='manage')
         try:
             request_object.save()
         except IntegrityError:
@@ -197,12 +198,14 @@ def friends_list(request):
     objects_list = request.user.appuser.friends.all()
     if request.POST.get('manager'):
         new_manager = models.AppUser.objects.get(pk=request.POST.get('manager'))
-        request_object = models.Request(reciever_content_object=new_manager, sender_content_object=request.session['business'], type='manage')
+        request_object = models.Request(reciever_content_object=new_manager,
+                                        sender_content_object=request.session['business'], type='manage')
         request_object.save()
         return redirect('my business request list')
     elif request.POST.get('benefit'):
         benefit_friend = models.AppUser.objects.get(pk=request.POST.get('benefit'))
-        request_object = models.Request(reciever_content_object=benefit_friend, sender_content_object=request.user.appuser, type='follow-benefit')
+        request_object = models.Request(reciever_content_object=benefit_friend,
+                                        sender_content_object=request.user.appuser, type='follow-benefit')
         request_object.save()
         return redirect('my user request list')
     context = {
@@ -255,7 +258,7 @@ def business_update(request, business_id):
     instance = get_object_or_404(models.Business, pk=business_id)
     form = forms.BusinessForm(request.POST or None, request.FILES or None, instance=instance)
     address_form = forms.AddressForm(request.POST or None)
-    print("@@@@@@@@@@@@@@@@@@@",request.POST, "@@@@@@@@@@@@@@@@@@@@@@@@")
+    print("@@@@@@@@@@@@@@@@@@@", request.POST, "@@@@@@@@@@@@@@@@@@@@@@@@")
     if form.is_valid() and address_form.is_valid():
         instance = form.save(commit=False)
         instance.save()
@@ -383,8 +386,9 @@ def item_create(request, business_id, catalog_id):
         instance.save()
         followers = models.User.objects.filter(appuser__in=catalog.business.followers.all())
         if followers:
-            notify.send(request.user, recipient_list=list(followers), actor=catalog.business, verb='created a new item.',
-                    target=instance, nf_type='create')
+            notify.send(request.user, recipient_list=list(followers), actor=catalog.business,
+                        verb='created a new item.',
+                        target=instance, nf_type='create')
         return redirect('item list', business_id, catalog_id)
     context = {
         'business_id': int(business_id),
@@ -455,8 +459,9 @@ def service_create(request, business_id, catalog_id):
         instance.save()
         followers = models.User.objects.filter(appuser__in=catalog.business.followers.all())
         if followers:
-            notify.send(request.user, recipient_list=list(followers), actor=catalog.business, verb='created a new service.',
-                    target=instance, nf_type='create')
+            notify.send(request.user, recipient_list=list(followers), actor=catalog.business,
+                        verb='created a new service.',
+                        target=instance, nf_type='create')
         return redirect('service list', business_id, catalog_id)
     context = {
         'business_id': int(business_id),
@@ -635,7 +640,7 @@ def friend_benefit_create(request):
         followers = models.User.objects.filter(appuser__in=base_benefit.business.followers.all())
         if followers:
             notify.send(request.user, recipient_list=list(followers), actor=base_benefit.business,
-                    verb='created a new friend benefit.', target=instance, nf_type='create')
+                        verb='created a new friend benefit.', target=instance, nf_type='create')
         return redirect('default')
     context = {
         'form': form,
@@ -814,6 +819,3 @@ def followers_nearby(request):
         'followers_dict': followers_dict,
     }
     return render(request, 'BaseApp/Location/followers_nearby.html', context)
-
-
-

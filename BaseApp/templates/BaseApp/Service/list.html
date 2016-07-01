@@ -10,29 +10,32 @@
 </section>
 <section class="content">
     {% for service in objects_list %}
-        <div class="info-box box-overflow">
-            <span class="info-box-image"><img src="{{service.image.url}}"></span>
-            <div class="info-box-content ">
-                <div class="info-box-more pull-right pull-top">
-                    {% for benefit in user.appuser.user_discount_benefits.all %}
-                    {% if service.servicediscount %}
-                    {% if service.servicediscount in benefit.discount_benefit.service_discounts.all and benefit.discount_benefit.benefit.is_available %}
-                    <span class="info-box-more pull-right pull-top text-red"><del>{{ service.price| stringformat:'d' }}</del><i class="fa fa-sheqel"></i></span>
-                    <span class="info-box-more pull-right pull-top text-green">{{ service.servicediscount.new_price| stringformat:'d' }}<i class="fa fa-sheqel"></i></span>
-                    {% endif %}
-                    {% else %}
-                    <span class="info-box-more pull-right pull-top">{{ service.price }}<i class="fa fa-sheqel"></i></span>
-                    {% endif %}
-                    {% empty %}
-                    <span class="info-box-more pull-right pull-top">{{ service.price }}<i class="fa fa-sheqel"></i></span>
-                    {% endfor %}
-                </div>
-                <span class="info-box-text"><b>Name:</b> {{ service.name }}</span>
-                <span class="info-box-more"><b>Description:</b> {{ service.description }}</span>
-                <span class="info-box-more"><b>Duration:</b> {{ service.duration }}</span>
-                <div class="info-box-more small pull-right"><b>Changed at:</b> {{ service.changed_at|date:"d.m.Y, H:i" }}</div>
+    <div class="info-box box-overflow">
+        <span class="info-box-image"><img src="{{service.image.url}}"></span>
+        <div class="info-box-content ">
+            <div class="info-box-more pull-right pull-top">
+                {% if service.servicediscount %}
+
+                {% for benefit in user.appuser.user_discount_benefits.all %}
+                {% if service.servicediscount in benefit.discount_benefit.service_discounts.all and benefit.discount_benefit.benefit.is_available %}
+                <span class="info-box-more pull-right pull-top text-red"><del>{{ service.price|floatformat }}</del><i class="fa fa-sheqel"></i></span>
+                <span class="info-box-more pull-right pull-top text-green">{{ service.servicediscount.new_price| floatformat }}<i class="fa fa-sheqel"></i></span>
+                {% elif service.servicediscount in benefit.discount_benefit.service_discounts.all and not benefit.discount_benefit.benefit.is_available %}
+                <span class="info-box-more pull-right pull-top">{{ service.price|floatformat }}<i class="fa fa-sheqel"></i></span>
+                {% endif %}
+                {% empty %}
+                <span class="info-box-more pull-right pull-top">{{ service.price|floatformat }}<i class="fa fa-sheqel"></i></span>
+                {% endfor %}
+                {% else %}
+                <span class="info-box-more pull-right pull-top">{{ service.price|floatformat }}<i class="fa fa-sheqel"></i></span>
+                {% endif %}
             </div>
+            <span class="info-box-text"><b>Name:</b> {{ service.name }}</span>
+            <span class="info-box-more"><b>Description:</b> {{ service.description }}</span>
+            <span class="info-box-more"><b>Duration:</b> {{ service.duration }}</span>
+            <div class="info-box-more small pull-right"><b>Changed at:</b> {{ service.changed_at|date:"d.m.Y, H:i" }}</div>
         </div>
+    </div>
     {% endfor %}
 
 </section>

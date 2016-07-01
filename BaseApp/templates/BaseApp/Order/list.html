@@ -8,7 +8,7 @@
     <table class="table table-hover table-bordered results">
         <thead>
         <tr>
-            {% if request.session.businesss = o.business %}
+            {% if request.session.business %}
             <th>User</th>
             {% else %}
             <th>Business</th>
@@ -23,7 +23,7 @@
         </thead>
         <tbody>
         {% for o in objects_list %}
-        {% if request.session.businesss = o.business %}
+        {% if request.session.business %}
         <tr data-href="{% url 'my user order details' o.id %}">
             <td>
                 <a href="{% url 'user details' o.user.id %}">

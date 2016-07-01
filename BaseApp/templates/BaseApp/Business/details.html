@@ -115,10 +115,7 @@
                             <i class="fa fa-envelope"></i>
                             Send a message
                         </a>
-                        <a href="#" class="btn btn-block btn-social btn-flat btn-success">
-                            <i class="fa fa-user-plus"></i>
-                            Invite to follow
-                        </a>
+
                         {% if user.appuser not in object.followers.all %}
                         <form action="#" method="GET">
                             <div class="input-group container-full">
@@ -138,10 +135,7 @@
                             </div>
                         </form>
                         {% endif %}
-                        <a href="#" class="btn btn-block btn-social btn-flat btn-danger">
-                            <i class="fa fa-ban"></i>
-                            Remove this user
-                        </a>
+
                     </div><!-- /.tab-pane -->
 
                     <div class="tab-pane" id="log">

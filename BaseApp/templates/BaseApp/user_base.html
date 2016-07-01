@@ -46,32 +46,26 @@
                             <li>
                                 <!-- inner menu: contains the actual data -->
                                 <ul class="menu">
-                                    {% for c in user.conversations.all %}
-                                    {% if c.appconversation.is_regular %}
+                                    {% for c in user.appuser.appconversation_set.all %}
                                     <li><!-- start message -->
-                                        <a href="{% url 'conversation_update' c.id%}">
+                                        <a href="{% url 'conversation_update' c.conversation.id%}">
                                             <div class="pull-left">
-                                                <img src="{{ c.appconversation.appuser.image.url }}" class="img-circle" alt="User Image">
+                                                <img src="{{ c.business.image.url }}" class="img-circle" alt="User Image">
                                             </div>
                                             <h4>
-                                                <small><i class="fa fa-clock-o"></i> {{ c.get_last_message.date|timesince|upto:',' }} ago</small>
-                                                {% if c.user.appuser not in c.appconversation.business.managers.all %}
-                                                {{ c.appconversation.business.name }}
-                                                {% else %}
-                                                {{ c.appconversation.appuser }}
-                                                {% endif %}
+                                                <small><i class="fa fa-clock-o"></i> {{ c.conversation.get_last_message.date|timesince|upto:',' }} ago</small>
+                                                {{ c.business.name }}
                                             </h4>
                                             <p>
-                                                {% if c.get_last_message.user.appuser in c.appconversation.business.managers.all %}
-                                                {{ c.appconversation.business.name }}
+                                                {% if c.conversation.get_last_message.user.appuser in c.business.managers.all %}
+                                                {{ c.business.name }}
                                                 {% else %}
-                                                {{ c.appconversation.appuser }}
+                                                {{ c.appuser }}
                                                 {% endif %}
-                                                : {{c.get_last_message.text}}
+                                                : {{c.conversation.get_last_message.text}}
                                             </p>
                                         </a>
                                     </li><!-- end message -->
-                                    {% endif %}
                                     {% endfor %}
                                 </ul>
                             </li>
@@ -211,7 +205,7 @@
             {% endfor %}
         </ul>
         {% endif %}
-        <section class="content">
+        <section class="content" >
             {% block content %}
             {% endblock %}
             {% block extra_body %}
@@ -231,7 +225,7 @@
         <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
             <li class="active"><a href="#control-sidebar-favorites-tab" data-toggle="tab"><i class="fa fa-heart-o"></i></a></li>
             <li><a href="#control-sidebar-businesses-tab" data-toggle="tab"><i class="fa fa-suitcase"></i></a></li>
-            <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
+            <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-users"></i></a></li>
         </ul>
         <!-- Tab panes -->
         <div class="tab-content">

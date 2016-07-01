@@ -8,13 +8,12 @@
     <table class="table table-hover table-bordered results">
         <thead>
         <tr>
-            {% if request.session.businesss = o.business %}
+            {% if request.session.business %}
             <th>User</th>
             {% else %}
             <th>Business</th>
             {% endif %}
             <th>Status</th>
-            <th>Total</th>
             <th>Created At</th>
         </tr>
         <tr class="warning no-result">
@@ -23,7 +22,7 @@
         </thead>
         <tbody>
         {% for o in objects_list %}
-        {% if request.session.businesss = o.business %}
+        {% if request.session.business %}
         <tr data-href="{% url 'my business dispute details' o.id %}">
             <td>
                 <a href="{% url 'user details' o.user.id %}">
@@ -65,7 +64,6 @@
                     <label>{{ o.created_at }}</label>
                 </span>
             </td>
-            <td >{{ o.total }} <i class="fa fa-sheqel"></i></td>
         </tr>
         {% empty %}
         <tr>no disputes</tr>

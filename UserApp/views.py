@@ -559,6 +559,3 @@ def businesses_nearby(request):
         'businesses_dict': businesses_dict
     }
     return render(request, 'BaseApp/Location/businesses_nearby.html', context)
-
-
-
