@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     'BusinessApp',
     'BaseApp',
     'UserApp',
+    'mysitefp1',
     'conversation',
     'django_libs',
     'widget_tweaks',
