@@ -133,16 +133,6 @@
     });
     });
     </script>
- <script>
-  function onDeviceReady() {
-    if (navigator.connection.type == Connection.NONE) {
-      navigator.notification.alert('An internet connection is required to continue');
-    } else {
-      window.location="http://mysitefp.herokuapp.com";
-    }
-  }
-  document.addEventListener("deviceready", onDeviceReady, false);
-</script>
 {% load notification_tags %}
 {% include_notify_js_variables %}
 {% block base-scripts %}
